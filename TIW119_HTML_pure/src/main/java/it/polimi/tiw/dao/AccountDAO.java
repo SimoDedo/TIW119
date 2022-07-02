@@ -51,7 +51,7 @@ public class AccountDAO {
                         Account account = new Account();
                         account.setID(result.getInt("id"));
                         account.setName(result.getString("name"));
-                        account.setBalance(result.setBigDecimal("balance"));
+                        account.setBalance(result.getBigDecimal("balance"));
                         return account;
                     }
                 }

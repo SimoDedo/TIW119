@@ -1,7 +1,6 @@
 package it.polimi.tiw.beans;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 
 public class Movement {
