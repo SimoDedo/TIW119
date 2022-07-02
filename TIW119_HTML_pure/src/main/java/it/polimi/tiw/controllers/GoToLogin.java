@@ -51,7 +51,7 @@ public class GoToLogin extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		templateEngine.process("/Login.html", ctx, response.getWriter());
+		templateEngine.process("/WEB-INF/Login.html", ctx, response.getWriter());
 	}
 
 	/**

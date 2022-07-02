@@ -14,7 +14,7 @@ public class UserDAO {
 	}
 
 	public User checkCredentials(String username, String password) throws SQLException {
-		String query = "SELECT  id, email, username, name, surname FROM user  WHERE username = ? AND password =?";
+		String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE username = ? AND password = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, username);
 			pstatement.setString(2, password);
@@ -36,7 +36,7 @@ public class UserDAO {
 	}
 
     public User getUserByUsername(String username) throws SQLException{
-        String query = "SELECT  id, email, username, name, surname FROM user  WHERE username = ?";
+        String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE username = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, username);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -57,7 +57,7 @@ public class UserDAO {
     }
 
     public User getUserByEmail(String email) throws SQLException{
-        String query = "SELECT  id, email, username, name, surname FROM user  WHERE username = ?";
+        String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE email = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, email);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -78,11 +78,11 @@ public class UserDAO {
     }
 
     public void registerUser(String name,String  surname,String  username,String  email,String  password) throws SQLException{
-        String query = "INSERT into user (email, username, password, name, surname) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT into tiw119.user (username, email, password, name, surname) VALUES (?, ?, ?, ?, ?)";
         con.setAutoCommit(false);
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
-			pstatement.setString(1, email);
-			pstatement.setString(2, username);
+			pstatement.setString(1, username);
+			pstatement.setString(2, email);
 			pstatement.setString(3, password);
 			pstatement.setString(4, name);
 			pstatement.setString(5, surname);

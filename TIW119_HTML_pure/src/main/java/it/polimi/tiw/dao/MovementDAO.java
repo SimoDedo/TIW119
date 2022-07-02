@@ -21,7 +21,7 @@ public class MovementDAO {
 
     public List<Movement> getIncomingMovementsByAccount(int accountID) throws SQLException{
         List<Movement> movements = new ArrayList<>();
-        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM movement  WHERE inAccountid = ?";
+        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE inAccountid = ?";
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setInt(1, accountID);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -42,7 +42,7 @@ public class MovementDAO {
 
     public List<Movement> getOutgoingMovementsByAccount(int accountID) throws SQLException{
         List<Movement> movements = new ArrayList<>();
-        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM movement  WHERE outAccountid = ?";
+        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE outAccountid = ?";
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setInt(1, accountID);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -62,7 +62,7 @@ public class MovementDAO {
     }
 
     public Movement getMovementByID(int movementID) throws SQLException{
-        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM movement  WHERE outAccountid = ?";
+        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE outAccountid = ?";
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setInt(1, movementID);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -86,7 +86,7 @@ public class MovementDAO {
     }
 
     public void requestMovement(Date date, BigDecimal amount, String motive, int inAccountID, int outAccountID) throws SQLException{
-        String query = "INSERT into movement (date, amount, motive, inAccountid, outAccountid) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT into tiw119.movement (date, amount, motive, inAccountid, outAccountid) VALUES (?, ?, ?, ?, ?)";
         con.setAutoCommit(false);
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setTimestamp(1, new Timestamp(date.getTime()));

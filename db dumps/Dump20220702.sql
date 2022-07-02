@@ -82,7 +82,7 @@ CREATE TABLE `movement` (
   `id` int NOT NULL AUTO_INCREMENT,
   `date` timestamp NOT NULL,
   `amount` decimal(12,2) NOT NULL,
-  `motive` varchar(45) NOT NULL,
+  `motive` varchar(200) NOT NULL,
   `inAccountID` int NOT NULL,
   `outAccountID` int NOT NULL,
   PRIMARY KEY (`id`),
@@ -120,7 +120,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,7 +129,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Simo','simo@mail.it','simo','Simone','de Donato'),(2,'Vale','vale@mail.it','vale','Valerio','Donno'),(3,'User','user@mail.it','user','User','User');
+INSERT INTO `user` VALUES (1,'Simo','simo@mail.it','simo','Simone','de Donato'),(2,'Vale','vale@mail.it','vale','Valerio','Donno'),(3,'User','user@mail.it','user','User','User'),(4,'test1','test1@mail.com','test1','test1name','test1surname');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -142,4 +142,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-02  9:23:23
+-- Dump completed on 2022-07-02 12:25:53

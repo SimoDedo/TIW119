@@ -19,7 +19,7 @@ public class AccountDAO {
 
         public List<Account> getAccountsByUser(int id) throws SQLException {
             List<Account> accounts = new ArrayList<>();
-            String query = "SELECT  id, name, balance, userid FROM account  WHERE id = ?";
+            String query = "SELECT  id, name, balance, userid FROM tiw119.account  WHERE id = ?";
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setInt(1, id);
                 try (ResultSet result = pstatement.executeQuery();) {
@@ -40,7 +40,7 @@ public class AccountDAO {
 
 
         public Account getAccountByID(int id) throws SQLException {
-            String query = "SELECT  id, name, balance FROM account  WHERE id = ?";
+            String query = "SELECT  id, name, balance FROM tiw119.account  WHERE id = ?";
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setInt(1, id);
                 try (ResultSet result = pstatement.executeQuery();) {
@@ -59,7 +59,7 @@ public class AccountDAO {
         }
 
         public void createAccount(String name, BigDecimal balance) throws SQLException{
-            String query = "INSERT into account (name, balance) VALUES (?, ?)";
+            String query = "INSERT into tiw119.account (name, balance) VALUES (?, ?)";
             con.setAutoCommit(false);
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setString(1, name);
