@@ -1,10 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
 </head>
 <body>
-
+    <h1>Home page</h1>
+    <p th:text="${'Here are the movements relative to ' + account.name + 'account'}"></p>
+    
+    <div th:if="${inmovements != null and not inmovements.isEmpty()}">
+        <p>Incoming movements</p>
+        <table class="account-table" >
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Motive</th>
+                    <th>Sender Account ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr  th:each="mov : ${inmovements}">
+                    <td th:text="${mov.Date}"> </td>
+                    <td th:text="${mov.Amount}"></td>
+                    <td th:text="${mov.Motive}"></td>
+                    <td th:text="${mov.outAccount}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p th:if="${inmovements == null or inmovements.isEmpty()}">No incoming movement available!</p>
+    
+    <div th:if="${outmovements != null and not outmovements.isEmpty()}">
+        <p>Incoming movements</p>
+        <table class="account-table" >
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Motive</th>
+                    <th>Recipient Account ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr  th:each="mov : ${outmovements}">
+                    <td th:text="${mov.Date}"> </td>
+                    <td th:text="${mov.Amount}"></td>
+                    <td th:text="${mov.Motive}"></td>
+                    <td th:text="${mov.inAccount}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p th:if="${outmovements == null or outmovements.isEmpty()}">No outgoing movement available!</p>
+    
+	<form action="#" th:action="@{/RequestMovement}" method="POST">
+        <fieldset>		
+            <p>Username: <input type="number" name="userDest" required> </p>
+            <p>Account: <input type="number" name="accountid" required> </p>
+            <p>Amount: <input type="number" name="amount" required> </p>
+            <p>Motive: <input type="text" name="motive" required> </p>
+            <input type="hidden" name="" required th:value="${account.id}">
+            <input type="submit" value="Request Movement"></fieldset>
+            <p th:text=" ${accountError}"></p>
+        </fieldset>		
+	</form>
 </body>
 </html>

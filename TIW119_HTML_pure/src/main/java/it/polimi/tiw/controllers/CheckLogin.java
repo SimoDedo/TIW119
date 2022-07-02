@@ -65,7 +65,7 @@ public class CheckLogin extends HttpServlet {
 
 		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
-		if(username == null || username.isEmpty() || password == null || password.isEmpty()){
+		if(username == null || username.isEmpty() || password == null || password.isEmpty()){ //Checks that POST parameters are not empty
 			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
 			return;
 		}
@@ -73,14 +73,14 @@ public class CheckLogin extends HttpServlet {
 		UserDAO userDAO = new UserDAO(connection);
 		User user = null;
 		try {
-			user = userDAO.checkCredentials(username, password);
+			user = userDAO.checkCredentials(username, password); 
 		} catch (SQLException e) {
 			toLoginWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
 			return;
 		}
 
 	
-		if(user == null){
+		if(user == null){ //Checks that credentials correspond to a user
 			toLoginWithError(request, response, ServletError.USER_NOT_FOUND);
 			return;
 		}
@@ -89,8 +89,6 @@ public class CheckLogin extends HttpServlet {
 			String path = getServletContext().getContextPath() + "/Home";
 			response.sendRedirect(path);
 		}
-
-		return;
 	}
 
 	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError loginErrorMsg) throws IOException{

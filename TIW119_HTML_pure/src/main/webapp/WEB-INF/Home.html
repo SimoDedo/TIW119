@@ -41,10 +41,9 @@
         <fieldset>		
             <p>Account Name: <input type="text" name="name" required> </p>
             <p>Balance: <input type="number" name="balance" required> </p>
-            <input type="hidden" name="userid" required th:value="${session.user.id}">
             <input type="submit" value="Create Account"></fieldset>
+            <p th:text=" ${accountError}"></p>
         </fieldset>		
-		<p th:text=" ${accountError}"></p>
 	</form>
 </body>
 </html>

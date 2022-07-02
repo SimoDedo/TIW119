@@ -59,7 +59,7 @@ public class GoToHome extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		
-		if(session.isNew() || session.getAttribute("user") == null ){
+		if(session.isNew() || session.getAttribute("user") == null ){ //Checks that user has logged in (and is thus saved in the session)
 			toLoginWithError(request, response, ServletError.NOT_LOGGED_IN);
 			return;
 		}
@@ -67,7 +67,7 @@ public class GoToHome extends HttpServlet {
 
 		List<Account> accounts = new ArrayList<>();
 		AccountDAO accountDAO = new AccountDAO(connection);
-		try {
+		try { //Retrieves the accounts to put in the template
 			accounts = accountDAO.getAccountsByUser(user.getID());
 		} catch (SQLException e) {
 			session.invalidate();
@@ -80,7 +80,7 @@ public class GoToHome extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("accounts", accounts);
-		if(errorid != null)
+		if(errorid != null) //Checks if an error is to be shown in the template
 			ctx.setVariable("accountError", ServletError.values()[errorid].toString());
 		String path = "/WEB-INF/Home.html";
 		templateEngine.process(path, ctx, response.getWriter());
@@ -112,10 +112,10 @@ public class GoToHome extends HttpServlet {
 		try{
 			id = Integer.parseInt(err);
 		}
-		catch(NumberFormatException e){
+		catch(NumberFormatException e){ //Checks that errorid parameter is actually an integer
 			return null;
 		}
-		if(id<0 || id >= ServletError.values().length)
+		if(id<0 || id >= ServletError.values().length) //Checks that errorid parameter is valid
 			return null;
 		else
 			return id;
