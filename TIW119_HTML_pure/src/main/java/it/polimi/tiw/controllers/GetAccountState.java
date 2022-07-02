@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class GetAccountState
  */
-@WebServlet("/GetAccountState")
+@WebServlet("/AccountState")
 public class GetAccountState extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

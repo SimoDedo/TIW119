@@ -87,6 +87,7 @@ public class MovementDAO {
 
     public void requestMovement(Date date, BigDecimal amount, String motive, int inAccountID, int outAccountID) throws SQLException{
         String query = "INSERT into tiw119.movement (date, amount, motive, inAccountid, outAccountid) VALUES (?, ?, ?, ?, ?)";
+        amount.setScale(2);
         con.setAutoCommit(false);
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setTimestamp(1, new Timestamp(date.getTime()));

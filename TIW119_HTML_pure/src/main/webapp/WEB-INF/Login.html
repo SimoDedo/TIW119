@@ -8,24 +8,30 @@
 	<h1>TIW 119 Project 4</h1>
 	<h2>Login</h2>
 
-	<form action="CheckLogin" method="POST">
-		Username: <input type="text" name="username" required> <br>
-		Password: <input type="password" name="password" required><br>
-		<input type="submit" value="login">
-		<p th:text=" ${loginError}"></p>
+	<p th:text=" ${generalError}"></p>
+
+	<form action="#" th:action="@{/CheckLogin}" method="POST">
+		<fieldset>
+			<p> Username: <input type="text" name="username" required> </p>
+			<p> Password: <input type="password" name="password" required></p>
+			<input type="submit" value="login">
+			<p th:text=" ${loginError}"></p>
+		</fieldset>
 	</form>
 	
 	<h2>Signup</h2>
 
-	<form action="CheckSignup" method="POST">
-		Username: <input type="text" name="username" required> <br>
-		Email: <input type="text" name="email" required> <br>
-		Password: <input type="password" name="password" required><br>
-		RepeatPassword: <input type="password" name="repeatPassword" required><br>
-		Name: <input type="text" name="name" required><br>
-		Surname: <input type="text" name="surname" required><br>
-		<input type="submit" value="signup">
-		<p th:text=" ${signupError}"></p>
+	<form action="#" th:action="@{/CheckSignup}" method="POST">
+		<fieldset>
+			<p> Username: <input type="text" name="username" required> </p>
+			<p> Email: <input type="text" name="email" required> </p>
+			<p> Password: <input type="password" name="password" required></p>
+			<p> RepeatPassword: <input type="password" name="repeatPassword" required></p>
+			<p> Name: <input type="text" name="name" required></p>
+			<p> Surname: <input type="text" name="surname" required></p>
+			<input type="submit" value="signup">
+			<p th:text=" ${signupError}"></p>
+		</fieldset>
 	</form>
 
 </body>

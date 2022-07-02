@@ -21,6 +21,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.ServletError;
 
 /**
  * Servlet implementation class CheckLogin
@@ -65,7 +66,7 @@ public class CheckLogin extends HttpServlet {
 		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if(username == null || username.isEmpty() || password == null || password.isEmpty()){
-			returnWithError(request, response, "Missing or empty credentials!");
+			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
 			return;
 		}
 		
@@ -74,13 +75,13 @@ public class CheckLogin extends HttpServlet {
 		try {
 			user = userDAO.checkCredentials(username, password);
 		} catch (SQLException e) {
-			returnWithError(request, response, "Internal error: can't check credentials");
+			toLoginWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
 			return;
 		}
 
 	
 		if(user == null){
-			returnWithError(request, response, "No user exists with given credentials");
+			toLoginWithError(request, response, ServletError.USER_NOT_FOUND);
 			return;
 		}
 		else{
@@ -92,10 +93,10 @@ public class CheckLogin extends HttpServlet {
 		return;
 	}
 
-	private void returnWithError(HttpServletRequest request, HttpServletResponse response, String loginErrorMsg) throws IOException{
+	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError loginErrorMsg) throws IOException{
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("loginError", loginErrorMsg);
+		ctx.setVariable("loginError", loginErrorMsg.toString());
 		String path = "/WEB-INF/Login.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}

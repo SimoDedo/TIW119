@@ -23,6 +23,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.ServletError;
 
 /**
  * Servlet implementation class CheckSignup
@@ -79,15 +80,15 @@ public class CheckSignup extends HttpServlet {
 		if(username == null || username.isEmpty() || email == null || email.isEmpty()
 		|| password == null || password.isEmpty() || repeatPassword == null || repeatPassword.isEmpty()
 		|| name == null || name.isEmpty() || surname == null || surname.isEmpty()){
-			returnWithError(request, response, "Missing or empty credentials!");
+			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
 			return;
 		}
 		if(! password.equals(repeatPassword)){
-			returnWithError(request, response, "Passwords do not match!");
+			toLoginWithError(request, response, ServletError.PASSWORD_MISMATCH);
 			return;
 		}
 		if(! isEmailValid(email)){
-			returnWithError(request, response, "Email is not a valid address!");
+			toLoginWithError(request, response, ServletError.EMAIL_FORMAT);
 			return;
 		}
 		
@@ -99,16 +100,16 @@ public class CheckSignup extends HttpServlet {
 			usernameUser = userDAO.getUserByUsername(username);
 			emailUser = userDAO.getUserByEmail(email);
 		} catch (SQLException e) {
-			returnWithError(request, response, "Internal error: can't check credentials");
+			toLoginWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
 			return;
 		}
 
 		if(usernameUser != null){
-			returnWithError(request, response, "A user with the given username already exists");
+			toLoginWithError(request, response, ServletError.USERNAME_ALREADY_EXISTS);
 			return;
 		}
 		else if(emailUser != null){
-			returnWithError(request, response, "A user with the given email already exists");
+			toLoginWithError(request, response, ServletError.EMAIL_ALREADY_EXISTS);
 			return;
 		}
 		else{
@@ -116,7 +117,7 @@ public class CheckSignup extends HttpServlet {
 			try {
 				userDAO.registerUser(name, surname, username, email, password);
 			} catch (SQLException e1) {
-				returnWithError(request, response, "Internal error: can't register user");
+				toLoginWithError(request, response, ServletError.IE_REGISTRATION);
 				return;
 			}
 
@@ -124,7 +125,7 @@ public class CheckSignup extends HttpServlet {
 			try {
 				toLog = userDAO.getUserByUsername(username);
 			} catch (SQLException e) {
-				returnWithError(request, response, "Internal error: can't find the registered user");
+				toLoginWithError(request, response, ServletError.IE_USER_NOT_FOUND);
 				return;
 			}
 
@@ -134,10 +135,10 @@ public class CheckSignup extends HttpServlet {
 		}
 	}
 
-	private void returnWithError(HttpServletRequest request, HttpServletResponse response, String signupErrorMsg) throws IOException{
+	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError signupErrorMsg) throws IOException{
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("signupError", signupErrorMsg);
+		ctx.setVariable("signupError", signupErrorMsg.toString());
 		String path = "/WEB-INF/Login.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
