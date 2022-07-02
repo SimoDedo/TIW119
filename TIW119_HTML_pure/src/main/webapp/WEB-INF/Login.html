@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>TIW 119 - Login page</title>
+</head>
+<body>
+	<h1>TIW 119 Project 4</h1>
+	<h2>Login</h2>
+
+	<form action="CheckLogin" method="POST">
+		Username: <input type="text" name="username" required> <br>
+		Password: <input type="password" name="pwd" required><br>
+		<input type="submit" value="login">
+		<p th:text=" ${errorMsg}"></p>
+	</form>
+	
+	<h2>Signup</h2>
+
+	<form action="CheckSignup" method="POST">
+		Username: <input type="text" name="username" required> <br>
+		Email: <input type="text" name="email" required> <br>
+		Password: <input type="password" name="password" required><br>
+		RepeatPassword: <input type="password" name="repeatPassword" required><br>
+		Name: <input type="text" name="name" required><br>
+		Surname: <input type="text" name="surname" required><br>
+		<input type="submit" value="signup">
+		<p th:text=" ${errorMsg}"></p>
+	</form>
+
+</body>
+</html>
