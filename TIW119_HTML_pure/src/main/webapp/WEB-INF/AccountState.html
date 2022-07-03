@@ -2,14 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>TIW119 - Account State</title>
 </head>
 <body>
     <h1>Home page</h1>
-    <p th:text="${'Here are the movements relative to ' + account.name + 'account'}"></p>
+    <p th:text=" ${generalError}"></p>
+    <p th:text="${'Here are the movements relative to ' + account.name + ' (ID ' + account.ID + ') with a balance of ' + account.balance}"></p>
     
     <div th:if="${inmovements != null and not inmovements.isEmpty()}">
-        <p>Incoming movements</p>
+        <p>Incoming movements: these are the instances where you received money</p>
         <table class="account-table" >
             <thead>
                 <tr>
@@ -24,7 +25,7 @@
                     <td th:text="${mov.Date}"> </td>
                     <td th:text="${mov.Amount}"></td>
                     <td th:text="${mov.Motive}"></td>
-                    <td th:text="${mov.outAccount}"></td>
+                    <td th:text="${mov.outAccountID}"></td>
                 </tr>
             </tbody>
         </table>
@@ -32,7 +33,7 @@
     <p th:if="${inmovements == null or inmovements.isEmpty()}">No incoming movement available!</p>
     
     <div th:if="${outmovements != null and not outmovements.isEmpty()}">
-        <p>Incoming movements</p>
+        <p>Outgoing movements: these are the instances where you gave money</p>
         <table class="account-table" >
             <thead>
                 <tr>
@@ -47,7 +48,7 @@
                     <td th:text="${mov.Date}"> </td>
                     <td th:text="${mov.Amount}"></td>
                     <td th:text="${mov.Motive}"></td>
-                    <td th:text="${mov.inAccount}"></td>
+                    <td th:text="${mov.inAccountID}"></td>
                 </tr>
             </tbody>
         </table>
@@ -55,14 +56,14 @@
     <p th:if="${outmovements == null or outmovements.isEmpty()}">No outgoing movement available!</p>
     
 	<form action="#" th:action="@{/RequestMovement}" method="POST">
+        <p>Select an account to send them some money!</Select></p>
         <fieldset>		
-            <p>Username: <input type="number" name="userDest" required> </p>
-            <p>Account: <input type="number" name="accountid" required> </p>
+            <p>User ID: <input type="number" name="inuserid" required> </p>
+            <p>Account ID: <input type="number" name="inaccountid" required> </p>
             <p>Amount: <input type="number" name="amount" required> </p>
             <p>Motive: <input type="text" name="motive" required> </p>
-            <input type="hidden" name="" required th:value="${account.id}">
+            <input type="hidden" name="outaccountid" required th:value="${account.ID}">
             <input type="submit" value="Request Movement"></fieldset>
-            <p th:text=" ${accountError}"></p>
         </fieldset>		
 	</form>
 </body>

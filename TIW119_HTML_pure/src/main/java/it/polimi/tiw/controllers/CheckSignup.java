@@ -39,7 +39,6 @@ public class CheckSignup extends HttpServlet {
      */
     public CheckSignup() {
         super();
-        // TODO Auto-generated constructor stub
     }
 	
 	public void init() throws UnavailableException{
@@ -63,19 +62,12 @@ public class CheckSignup extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = null;
-		String email = null;
-		String password = null;
-		String repeatPassword = null;
-		String name = null;
-		String surname = null;
-
-		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		email = StringEscapeUtils.escapeJava(request.getParameter("email"));
-		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
-		repeatPassword = StringEscapeUtils.escapeJava(request.getParameter("repeatPassword"));
-		name = StringEscapeUtils.escapeJava(request.getParameter("name"));
-		surname = StringEscapeUtils.escapeJava(request.getParameter("surname"));
+		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
+		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
+		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		String repeatPassword = StringEscapeUtils.escapeJava(request.getParameter("repeatPassword"));
+		String name = StringEscapeUtils.escapeJava(request.getParameter("name"));
+		String surname = StringEscapeUtils.escapeJava(request.getParameter("surname"));
 		
 		if(username == null || username.isEmpty() || email == null || email.isEmpty()
 		|| password == null || password.isEmpty() || repeatPassword == null || repeatPassword.isEmpty()

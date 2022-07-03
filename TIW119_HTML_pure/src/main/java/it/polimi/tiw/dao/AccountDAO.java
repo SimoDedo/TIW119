@@ -38,7 +38,7 @@ public class AccountDAO {
         }
 
         public Account getAccountByID(int id) throws SQLException {
-            String query = "SELECT  id, name, balance FROM tiw119.account  WHERE id = ?";
+            String query = "SELECT  id, name, balance, userid FROM tiw119.account  WHERE id = ?";
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setInt(1, id);
                 try (ResultSet result = pstatement.executeQuery();) {
@@ -50,6 +50,7 @@ public class AccountDAO {
                         account.setID(result.getInt("id"));
                         account.setName(result.getString("name"));
                         account.setBalance(result.getBigDecimal("balance"));
+                        account.setOwnerID(result.getInt("userid"));
                         return account;
                     }
                 }
@@ -57,7 +58,7 @@ public class AccountDAO {
         }
 
         public Account getAccountByName(String name) throws SQLException {
-            String query = "SELECT  id, name, balance FROM tiw119.account  WHERE name = ?";
+            String query = "SELECT  id, name, balance, userid FROM tiw119.account  WHERE name = ?";
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setString(1, name);
                 try (ResultSet result = pstatement.executeQuery();) {
@@ -69,6 +70,7 @@ public class AccountDAO {
                         account.setID(result.getInt("id"));
                         account.setName(result.getString("name"));
                         account.setBalance(result.getBigDecimal("balance"));
+                        account.setOwnerID(result.getInt("userid"));
                         return account;
                     }
                 }

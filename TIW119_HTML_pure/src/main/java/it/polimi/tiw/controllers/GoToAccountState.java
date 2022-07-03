@@ -24,7 +24,7 @@ import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Movement;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
-
+import it.polimi.tiw.dao.MovementDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.utils.ServletError;
 
@@ -32,7 +32,7 @@ import it.polimi.tiw.utils.ServletError;
  * Servlet implementation class GetAccountState
  */
 @WebServlet("/AccountState")
-public class GetAccountState extends HttpServlet {
+public class GoToAccountState extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;   
@@ -40,7 +40,7 @@ public class GetAccountState extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetAccountState() {
+    public GoToAccountState() {
         super();
     }
 
@@ -71,7 +71,7 @@ public class GetAccountState extends HttpServlet {
 		try {
 			accountid = Integer.valueOf(accountidString);	
 		} catch (NumberFormatException e) { //Checks that the accountid parameter is actually a number
-			toLoginWithError(request, response, ServletError.ACC_ID_FORMAT);
+			toHomeWithError(request, response, ServletError.ACC_ID_FORMAT);
 			return;
 		}
 		
@@ -80,21 +80,43 @@ public class GetAccountState extends HttpServlet {
 		try {
 			account = accountDAO.getAccountByID(accountid);	
 		} catch (SQLException e) {
-			toLoginWithError(request, response, ServletError.IE_RETRIEVE_ACC);
+			toHomeWithError(request, response, ServletError.IE_RETRIEVE_ACC);
 			return;
 		}
 
 		if(account == null){ //Checks that the account actually exists
-			toLoginWithError(request, response, ServletError.ACC_NON_EXISTENT);
+			toHomeWithError(request, response, ServletError.ACC_NOT_FOUND);
 			return;
 		}
 		if(account.getOwnerID() != user.getID()){ //Check that the logged user actually owns the account
-			toLoginWithError(request, response, ServletError.ACC_NOT_OWNED);
+			toHomeWithError(request, response, ServletError.ACC_NOT_OWNED);
 			return;
 		}
 
 		List<Movement> inMovs = null;
 		List<Movement> outMovs = null;
+
+		MovementDAO movementDAO = new MovementDAO(connection);
+
+		try {
+			inMovs = movementDAO.getIncomingMovementsByAccount(accountid);	
+			outMovs = movementDAO.getOutgoingMovementsByAccount(accountid);
+		} catch (SQLException e) {
+			toHomeWithError(request, response, ServletError.IE_RETRIEVE_MOV);
+			return;
+		}
+
+		//Sorts lists by date
+		inMovs.sort((mov1, mov2) -> - mov1.getDate().compareTo(mov2.getDate()));
+		outMovs.sort((mov1, mov2) -> - mov1.getDate().compareTo(mov2.getDate()));
+
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		ctx.setVariable("account", account);
+		ctx.setVariable("inmovements", inMovs);
+		ctx.setVariable("outmovements", outMovs);
+		String path = "/WEB-INF/AccountState.html";
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	/**
@@ -110,6 +132,11 @@ public class GetAccountState extends HttpServlet {
 		ctx.setVariable("generalError", generalErrorMsg.toString());
 		String path = "/WEB-INF/Login.html";
 		templateEngine.process(path, ctx, response.getWriter());
+	}
+
+	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
+		String path = getServletContext().getContextPath() + "/Home?errorid=" + accountErrorMsg.ordinal();
+		response.sendRedirect(path);
 	}
 
 	public void destroy() {

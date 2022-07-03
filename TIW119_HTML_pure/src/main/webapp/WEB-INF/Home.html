@@ -2,11 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>TIW 119 - Home page</title>
 </head>
 <body>
     <h1>Home page</h1>
     <p th:text="${'Welcome back ' + session.user.name + ' ' + session.user.surname}"></p>
+
+    <p th:text=" ${generalError}"></p>
 
     <div th:if="${accounts != null and not accounts.isEmpty()}">
         <table class="account-table" >

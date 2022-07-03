@@ -60,11 +60,9 @@ public class CheckLogin extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = null;
-		String password = null;
 
-		username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
+		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 		if(username == null || username.isEmpty() || password == null || password.isEmpty()){ //Checks that POST parameters are not empty
 			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
 			return;

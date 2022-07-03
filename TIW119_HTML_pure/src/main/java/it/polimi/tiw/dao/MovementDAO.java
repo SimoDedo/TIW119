@@ -2,7 +2,7 @@ package it.polimi.tiw.dao;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Movement;
 
 public class MovementDAO {
@@ -85,17 +86,31 @@ public class MovementDAO {
         }
     }
 
-    public void requestMovement(Date date, BigDecimal amount, String motive, int inAccountID, int outAccountID) throws SQLException{
-        String query = "INSERT into tiw119.movement (date, amount, motive, inAccountid, outAccountid) VALUES (?, ?, ?, ?, ?)";
+    public void requestMovement(Date date, BigDecimal amount, String motive, Account inAccount, Account outAccount) throws SQLException{
+        String query1 = "INSERT into tiw119.movement (date, amount, motive, inAccountid, outAccountid) VALUES (?, ?, ?, ?, ?)";
+        String query2 = "UPDATE tiw119.account SET balance = ? WHERE id = ?";
         amount.setScale(2);
         con.setAutoCommit(false);
-        try (PreparedStatement pstatement = con.prepareStatement(query);) {
-            pstatement.setTimestamp(1, new Timestamp(date.getTime()));
-            pstatement.setBigDecimal(2, amount);
-            pstatement.setString(3, motive);
-            pstatement.setInt(4, inAccountID);
-            pstatement.setInt(5, outAccountID);
-            pstatement.executeUpdate();
+        try (PreparedStatement pstatement1 = con.prepareStatement(query1);
+        PreparedStatement pstatement2 = con.prepareStatement(query2);) {
+            pstatement1.setTimestamp(1, new Timestamp(date.getTime()));
+            pstatement1.setBigDecimal(2, amount);
+            pstatement1.setString(3, motive);
+            pstatement1.setInt(4, inAccount.getID());
+            pstatement1.setInt(5, outAccount.getID());
+            pstatement1.executeUpdate(); //Adds movement
+
+            BigDecimal newBalance = null;
+
+            newBalance = BigDecimal.valueOf( outAccount.getBalance().doubleValue() - amount.doubleValue());
+            pstatement2.setBigDecimal(1, newBalance);
+            pstatement2.setInt(2, outAccount.getID());
+            pstatement2.executeUpdate(); //Removes money from sender
+
+            newBalance = BigDecimal.valueOf( inAccount.getBalance().doubleValue() + amount.doubleValue());
+            pstatement2.setBigDecimal(1, newBalance);
+            pstatement2.setInt(2, inAccount.getID());
+            pstatement2.executeUpdate(); //Adds money to receipient
             
             con.commit();
         }

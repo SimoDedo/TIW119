@@ -41,7 +41,6 @@ public class CreateAccount extends HttpServlet {
      */
     public CreateAccount() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	public void init() throws UnavailableException{
@@ -72,26 +71,23 @@ public class CreateAccount extends HttpServlet {
 		}
 		User user = (User) session.getAttribute("user");
 
-		String accountName = null;
-		String balString = null;
 
-		accountName = StringEscapeUtils.escapeJava(request.getParameter("name"));
-		balString = StringEscapeUtils.escapeJava(request.getParameter("balance"));
+		String accountName = StringEscapeUtils.escapeJava(request.getParameter("name"));
 		
-		if(accountName == null || accountName.isEmpty() || balString == null || balString.isEmpty()){ //Checks that POST parameters aren't empty
+		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
 			toHomeWithError(request, response, ServletError.MISSING_DATA);
 			return;
 		}
 
 		Double balance = null;
 		try{ 
-			balance = (Double.valueOf(balString));
-		}catch(NumberFormatException e){ //Checks that the given balance is actually a number
+			balance = Double.parseDouble(request.getParameter("balance"));
+		}catch(NumberFormatException | NullPointerException e){ //Checks that the given balance is actually a number
 			toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
 			return;
 		}
 		if( balance < 0){ //Checks that the given balance is positive
-			toHomeWithError(request, response, ServletError.NEGATIVE_NUMBER);
+			toHomeWithError(request, response, ServletError.NEGATIVE_BALANCE);
 			return;
 		}
 		
@@ -130,7 +126,7 @@ public class CreateAccount extends HttpServlet {
 	}
 
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/Home?errorid=" + accountErrorMsg.ordinal();
+		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
 		response.sendRedirect(path);
 	}
 

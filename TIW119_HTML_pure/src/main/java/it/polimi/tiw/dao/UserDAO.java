@@ -35,6 +35,27 @@ public class UserDAO {
 		}
 	}
 
+    public User getUserByID(int userID) throws SQLException{
+        String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE id = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, userID);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.isBeforeFirst()) // no results, credential check failed
+					return null;
+				else {
+					result.next();
+					User user = new User();
+					user.setID(result.getInt("id"));
+                    user.setEmail(result.getString("email"));
+					user.setUsername(result.getString("username"));
+					user.setName(result.getString("name"));
+					user.setSurname(result.getString("surname"));
+					return user;
+				}
+			}
+        }
+    }
+
     public User getUserByUsername(String username) throws SQLException{
         String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE username = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {

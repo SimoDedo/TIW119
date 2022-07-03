@@ -75,13 +75,16 @@ public class GoToHome extends HttpServlet {
 			return;
 		}
 
-		Integer errorid = getErrorID(request); 
+		Integer errorid = getErrorID(request, "errorid"); 
+		Integer accErrorid = getErrorID(request, "accErrorid"); 
 
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("accounts", accounts);
+		if(accErrorid != null) //Checks if an error is to be shown in the template
+			ctx.setVariable("accountError", ServletError.values()[accErrorid].toString());
 		if(errorid != null) //Checks if an error is to be shown in the template
-			ctx.setVariable("accountError", ServletError.values()[errorid].toString());
+			ctx.setVariable("generalError", ServletError.values()[errorid].toString());
 		String path = "/WEB-INF/Home.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
@@ -106,13 +109,12 @@ public class GoToHome extends HttpServlet {
 	 * @param request the HTTP request.
 	 * @return the id of the error to display, null if invalid
 	 */
-	private Integer getErrorID(HttpServletRequest request){
-		String err = request.getParameter("errorid");
+	private Integer getErrorID(HttpServletRequest request, String paramName){
 		Integer id = null;
 		try{
-			id = Integer.parseInt(err);
+			id = Integer.parseInt(request.getParameter(paramName));
 		}
-		catch(NumberFormatException e){ //Checks that errorid parameter is actually an integer
+		catch(NumberFormatException | NullPointerException e){ //Checks that errorid parameter is actually an integer 
 			return null;
 		}
 		if(id<0 || id >= ServletError.values().length) //Checks that errorid parameter is valid
