@@ -5,7 +5,7 @@ package it.polimi.tiw.utils;
  */
 public enum ServletError {
     
-    NOT_LOGGED_IN("Login before trying to access Home page!"),
+    NOT_LOGGED_IN("Login before trying to access any page!"),
     MISSING_CREDENTIALS("Missing or empty credentials"),
     MISSING_DATA("Missing data in form!"),
     NUMBER_FORMAT("Number not formatted correctly. Use \".\" to insert decimals!"),
@@ -24,6 +24,7 @@ public enum ServletError {
     ACC_NOT_OWNED_BY_USER("The account you're trying to access is not owned by the given user"),
     ACC_INSUFFICIENT_BALANCE("The account doesn't have enough money to make the transfer"),
     ACC_SAME("You can't move money from and to the same account"),
+    NO_MOVEMENT_MADE("You have not made any new movement"),
     IE_RETRIEVE_USER("Internal error: unable to retrieve user data."),
     IE_RETRIEVE_ACC("Internal error: unable to retrieve account data."),
     IE_RETRIEVE_MOV("Internal error: can't retrieve account movements"),

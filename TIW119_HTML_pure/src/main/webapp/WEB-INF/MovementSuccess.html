@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
 <title>TIW 119 - Movement Success</title>
 </head>
 <body>
-
+    <div>
+        <h1>
+            The movement from <span th:text="${outAccount.ID}"></span> to <span th:text="${inAccount.ID}"></span> was succesfful!
+        </h1>
+        Date of the movement: <span th:text="${movement.date}">10-10-1010</span><br>
+        <div>
+            <h1>
+                Account: <span th:text="${outAccount.ID}">1</span>
+            </h1>
+            Old balance: <span th:text="${outAccount.balance + movement.amount}">1000</span><br>
+            Amount removed: <span th:text="${movement.amount}">100</span><br>
+            New balance: <span th:text="${outAccount.balance}">900</span><br>
+        </div>
+        <div>
+            <h1>
+                Account: <span th:text="${inAccount.ID}">2</span>
+            </h1>
+            Old balance: <span th:text="${inAccount.balance - movement.amount}">2000</span><br>
+            Amount added: <span th:text="${movement.amount}">100</span><br>
+            New balance: <span th:text="${inAccount.balance}">2100</span><br>
+        </div>
+    </div>
 </body>
 </html>

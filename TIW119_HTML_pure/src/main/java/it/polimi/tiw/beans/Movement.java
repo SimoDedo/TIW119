@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class Movement {
-	private int ID;
+	private int ID; //TODO: never used, keep it anyway in case it might be useful?
 	private Date date;
 	private BigDecimal amount;
 	private String motive;

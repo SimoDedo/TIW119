@@ -22,6 +22,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.Account;
+import it.polimi.tiw.beans.Movement;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
 import it.polimi.tiw.dao.MovementDAO;
@@ -142,13 +143,23 @@ public class RequestMovement extends HttpServlet {
 		}
 
 		MovementDAO movementDAO = new MovementDAO(connection);
-
+		Date date = new Date(System.currentTimeMillis());
 		try { //Creates the movement
-			movementDAO.requestMovement(new Date(System.currentTimeMillis()), BigDecimal.valueOf(amount), motive, inAccount, outAccount);
+			movementDAO.requestMovement(date, BigDecimal.valueOf(amount), motive, inAccount, outAccount);
 		} catch (SQLException e1) {
 			toMovementFailure(request, response, ServletError.IE_CREATE_MOVEMENT);
 			return;
 		}
+
+		Movement movement = new Movement();
+		movement.setDate(date);
+		movement.setAmount(BigDecimal.valueOf(amount).setScale(2));
+		movement.setMotive(motive);
+		movement.setInAccountID(inAccountID);
+		movement.setOutAccountID(outAccountID);
+
+		//Adds movement just made to session so that user can be redirected to a confirmation page and see the data
+		session.setAttribute("movementMade", movement);		
 
 		String path = getServletContext().getContextPath() + "/MovementSuccess";
 		response.sendRedirect(path);

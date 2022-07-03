@@ -60,7 +60,7 @@
         <fieldset>		
             <p>User ID: <input type="number" name="inuserid" required> </p>
             <p>Account ID: <input type="number" name="inaccountid" required> </p>
-            <p>Amount: <input type="number" name="amount" required> </p>
+            <p>Amount: <input type="number" name="amount" required min="0" step="0.01"> </p>
             <p>Motive: <input type="text" name="motive" required> </p>
             <input type="hidden" name="outaccountid" required th:value="${account.ID}">
             <input type="submit" value="Request Movement"></fieldset>

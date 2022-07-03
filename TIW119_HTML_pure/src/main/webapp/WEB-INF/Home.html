@@ -42,7 +42,7 @@
 	<form action="#" th:action="@{/CreateAccount}" method="POST">
         <fieldset>		
             <p>Account Name: <input type="text" name="name" required> </p>
-            <p>Balance: <input type="number" name="balance" required> </p>
+            <p>Balance: <input type="number" name="balance" required min="0" step="0.01"> </p>
             <input type="submit" value="Create Account"></fieldset>
             <p th:text=" ${accountError}"></p>
         </fieldset>		
