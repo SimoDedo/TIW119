@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -74,35 +73,45 @@ public class RequestMovement extends HttpServlet {
 		}
 		User outUser = (User) session.getAttribute("user");
 
-		String motive = StringEscapeUtils.escapeJava(request.getParameter("motive"));
+		int outAccountID;
+		try{ //Checks that the source account ID is valid. If it isn't, redirects to login. If it is, all next errors can redirect to movement failure.
+			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
+		}catch(NumberFormatException | NullPointerException e){ 
+			if(e instanceof NullPointerException)
+				toLoginWithError(request, response, ServletError.MISSING_DATA);
+			if(e instanceof NumberFormatException)
+				toLoginWithError(request, response, ServletError.NUMBER_FORMAT);
+			return;
+		}
 
-		if(motive == null || motive.isEmpty()){ //Checks that POST parameters aren't empty
-			toMovementFailure(request, response, ServletError.MISSING_DATA);
+		String motive = request.getParameter("motive");
+
+		//Checks that POST parameters aren't empty
+		if(motive == null || motive.isEmpty()){ 
+			toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
 			return;
 		}
 
 		int inUserID;
 		int inAccountID;
 		Double amount = null;
-		int outAccountID;
 		try{ 
 			inUserID = Integer.valueOf(request.getParameter("inuserid"));
 			inAccountID = Integer.valueOf(request.getParameter("inaccountid"));
 			amount = Double.valueOf(request.getParameter("amount"));
-			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
-		}catch(NumberFormatException | NullPointerException e){ //Checks that the given balance is actually a number
+		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually a number
 			if(e instanceof NullPointerException)
-				toMovementFailure(request, response, ServletError.MISSING_DATA);
+				toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
 			if(e instanceof NumberFormatException)
-				toMovementFailure(request, response, ServletError.NUMBER_FORMAT);
+				toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
 			return;
 		}
 		if( amount < 0){ //Checks that the given amount is positive
-			toMovementFailure(request, response, ServletError.NEGATIVE_AMOUNT);
+			toMovementFailure(request, response, ServletError.NEGATIVE_AMOUNT, outAccountID);
 			return;
 		}
 		if(inAccountID == outAccountID){
-			toMovementFailure(request, response, ServletError.ACC_SAME);
+			toMovementFailure(request, response, ServletError.ACC_SAME, outAccountID);
 			return;
 		}
 
@@ -111,11 +120,11 @@ public class RequestMovement extends HttpServlet {
 		try{
 			inUser = userDAO.getUserByID(inUserID);
 		}catch(SQLException e){
-			toMovementFailure(request, response, ServletError.IE_RETRIEVE_USER);
+			toMovementFailure(request, response, ServletError.IE_RETRIEVE_USER, outAccountID);
 			return;
 		}
 		if(inUser == null ){ //Checks that user exists
-			toMovementFailure(request, response, ServletError.USER_ID_NOT_FOUND);
+			toMovementFailure(request, response, ServletError.USER_ID_NOT_FOUND, outAccountID);
 			return;
 		}
 
@@ -126,19 +135,19 @@ public class RequestMovement extends HttpServlet {
 			inAccount = accountDAO.getAccountByID(inAccountID);
 			outAccount = accountDAO.getAccountByID(outAccountID);
 		} catch (SQLException e) {
-			toMovementFailure(request, response, ServletError.IE_ACC_NOT_FOUND);
+			toMovementFailure(request, response, ServletError.IE_ACC_NOT_FOUND, outAccountID);
 			return;
 		}
 		if(inAccount == null || outAccount == null){ //Checks that accounts exists
-			toMovementFailure(request, response, ServletError.ACC_NOT_FOUND);
+			toMovementFailure(request, response, ServletError.ACC_NOT_FOUND, outAccountID);
 			return;
 		}
 		if(inAccount.getOwnerID() != inUser.getID() || outAccount.getOwnerID() != outUser.getID() ){ //Checks that users own their accounts
-			toMovementFailure(request, response, ServletError.ACC_NOT_OWNED_BY_USER);
+			toMovementFailure(request, response, ServletError.ACC_NOT_OWNED_BY_USER, outAccountID);
 			return;
 		}
 		if(outAccount.getBalance().doubleValue() < amount){
-			toMovementFailure(request, response, ServletError.ACC_INSUFFICIENT_BALANCE);
+			toMovementFailure(request, response, ServletError.ACC_INSUFFICIENT_BALANCE, outAccountID);
 			return;
 		}
 
@@ -147,7 +156,8 @@ public class RequestMovement extends HttpServlet {
 		try { //Creates the movement
 			movementDAO.requestMovement(date, BigDecimal.valueOf(amount), motive, inAccount, outAccount);
 		} catch (SQLException e1) {
-			toMovementFailure(request, response, ServletError.IE_CREATE_MOVEMENT);
+			e1.printStackTrace();
+			toMovementFailure(request, response, ServletError.IE_CREATE_MOVEMENT, outAccountID);
 			return;
 		}
 
@@ -174,10 +184,11 @@ public class RequestMovement extends HttpServlet {
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
-	private void toMovementFailure(HttpServletRequest request, HttpServletResponse response, ServletError errorMsg) throws IOException{
+	private void toMovementFailure(HttpServletRequest request, HttpServletResponse response, ServletError errorMsg, int outAccountID) throws IOException{
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("movementError", errorMsg.toString());
+		ctx.setVariable("backPath", "/AccountState?accountid=" + outAccountID);
 		String path = "/WEB-INF/MovementFailure.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}

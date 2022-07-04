@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -62,12 +61,12 @@ public class CheckSignup extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		String email = StringEscapeUtils.escapeJava(request.getParameter("email"));
-		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
-		String repeatPassword = StringEscapeUtils.escapeJava(request.getParameter("repeatPassword"));
-		String name = StringEscapeUtils.escapeJava(request.getParameter("name"));
-		String surname = StringEscapeUtils.escapeJava(request.getParameter("surname"));
+		String username = request.getParameter("username");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String repeatPassword = request.getParameter("repeatPassword");
+		String name = request.getParameter("name");
+		String surname = request.getParameter("surname");
 		
 		if(username == null || username.isEmpty() || email == null || email.isEmpty()
 		|| password == null || password.isEmpty() || repeatPassword == null || repeatPassword.isEmpty()

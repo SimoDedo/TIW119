@@ -64,7 +64,7 @@ public class GoToMovementSuccess extends HttpServlet {
 
 		Movement movement = (Movement) session.getAttribute("movementMade");
 		if(movement == null){ //Checks that there is a movement that requires confirmation to be shown
-			toLoginWithError(request, response, ServletError.NO_MOVEMENT_MADE);
+			toHomeWithError(request, response, ServletError.NO_MOVEMENT_MADE);
 			return;
 		}
 		//Removes movement from session to avoid being able to show confirmation more than once
@@ -86,6 +86,7 @@ public class GoToMovementSuccess extends HttpServlet {
 		ctx.setVariable("inAccount", inAccount);
 		ctx.setVariable("outAccount", outAccount);
 		ctx.setVariable("movement", movement);
+		ctx.setVariable("backPath", "/AccountState?accountid=" + outAccount.getID());
 		String path = "/WEB-INF/MovementSuccess.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
@@ -106,7 +107,7 @@ public class GoToMovementSuccess extends HttpServlet {
 	}
 
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
+		String path = getServletContext().getContextPath() + "/Home?errorid=" + accountErrorMsg.ordinal();
 		response.sendRedirect(path);
 	}
 

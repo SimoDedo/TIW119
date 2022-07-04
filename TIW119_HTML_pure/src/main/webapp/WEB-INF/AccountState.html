@@ -1,70 +1,127 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>TIW119 - Account State</title>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+    <title>TIW119 - Account State</title>
+    <link rel="stylesheet" type="text/css" href="../css/Global.css" th:href="@{/css/Global.css}"/>
+	<link rel="stylesheet" type="text/css" href="../css/AccountState.css" th:href="@{/css/AccountState.css}"/>
 </head>
 <body>
-    <h1>Home page</h1>
-    <p th:text=" ${generalError}"></p>
-    <p th:text="${'Here are the movements relative to ' + account.name + ' (ID ' + account.ID + ') with a balance of ' + account.balance}"></p>
-    
-    <div th:if="${inmovements != null and not inmovements.isEmpty()}">
-        <p>Incoming movements: these are the instances where you received money</p>
-        <table class="account-table" >
+    <div th:replace="/WEB-INF/TopBar :: top-bar">
+        Top bar placeholder
+    </div>
+    <h1>Account state page</h1>
+    <p class="error" th:if="${generalError != null}" th:text=" ${generalError}">Error</p>
+    <div class="table-container-account">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Motive</th>
-                    <th>Sender Account ID</th>
+                    <th>User ID</th>
+                    <th>User</th>
+                    <th>Account ID</th>
+                    <th>Account name</th>
+                    <th>Balance</th>
                 </tr>
             </thead>
             <tbody>
-                <tr  th:each="mov : ${inmovements}">
-                    <td th:text="${mov.Date}"> </td>
-                    <td th:text="${mov.Amount}"></td>
-                    <td th:text="${mov.Motive}"></td>
-                    <td th:text="${mov.outAccountID}"></td>
+                <tr>
+                    <td th:text="${session.user.id}">1</td>
+                    <td th:text="${session.user.name + ' ' + session.user.surname}">persona</td>
+                    <td th:text="${account.ID}">1</td>
+                    <td th:text="${account.name}">conto nome</td>
+                    <td th:text="${account.balance}">9000</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <p th:if="${inmovements == null or inmovements.isEmpty()}">No incoming movement available!</p>
+    <div  th:if="${inmovements != null and not inmovements.isEmpty()}">
+        <h4>Incoming movements: these are the instances where you received money</h4>
+        <div class="table-container-movement">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Motive</th>
+                        <th>Sender Account ID</th>
+                    </tr>
+                </thead>
+                <tbody th:remove="all-but-first">
+                    <tr  th:each="mov : ${inmovements}">
+                        <td th:text="${#dates.format(mov.date, 'dd-MM-yyyy HH:mm:ss')}"> </td>
+                        <td th:text="${mov.Amount}"></td>
+                        <td th:text="${mov.Motive}"></td>
+                        <td th:text="${mov.outAccountID}"></td>
+                    </tr>
+                    <tr>
+                        <td> data molto data</td>
+                        <td> 23423342423234</td>
+                        <td> testo super lungo</td>
+                        <td> 676678978989</td>
+                    </tr>
+                    <tr>
+                        <td> data molto data</td>
+                        <td> 23423342423234</td>
+                        <td> testo super lungo</td>
+                        <td> 676678978989</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2 th:if="${inmovements == null or inmovements.isEmpty()}">No incoming movement available!</h2>
     
     <div th:if="${outmovements != null and not outmovements.isEmpty()}">
-        <p>Outgoing movements: these are the instances where you gave money</p>
-        <table class="account-table" >
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Motive</th>
-                    <th>Recipient Account ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr  th:each="mov : ${outmovements}">
-                    <td th:text="${mov.Date}"> </td>
-                    <td th:text="${mov.Amount}"></td>
-                    <td th:text="${mov.Motive}"></td>
-                    <td th:text="${mov.inAccountID}"></td>
-                </tr>
-            </tbody>
-        </table>
+        <h4>Outgoing movements: these are the instances where you gave money</h4>
+        <div class="table-container-movement">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Motive</th>
+                        <th>Recipient Account ID</th>
+                    </tr>
+                </thead>
+                <tbody th:remove="all-but-first">
+                    <tr  th:each="mov : ${outmovements}">
+                        <td th:text="${#dates.format(mov.date, 'dd-MM-yyyy HH:mm:ss')}"> </td>
+                        <td th:text="${mov.Amount}"></td>
+                        <td th:text="${mov.Motive}"></td>
+                        <td th:text="${mov.inAccountID}"></td>
+                    </tr>
+                    <tr>
+                        <td> data molto data</td>
+                        <td> 23423342423234</td>
+                        <td> testo super lungo</td>
+                        <td> 676678978989</td>
+                    </tr>
+                    <tr>
+                        <td> data molto data</td>
+                        <td> 23423342423234</td>
+                        <td> testo super lungo</td>
+                        <td> 676678978989</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <p th:if="${outmovements == null or outmovements.isEmpty()}">No outgoing movement available!</p>
+    <h2 th:if="${outmovements == null or outmovements.isEmpty()}">No outgoing movement available!</h2>
     
-	<form action="#" th:action="@{/RequestMovement}" method="POST">
-        <p>Select an account to send them some money!</Select></p>
-        <fieldset>		
-            <p>User ID: <input type="number" name="inuserid" required> </p>
-            <p>Account ID: <input type="number" name="inaccountid" required> </p>
-            <p>Amount: <input type="number" name="amount" required min="0" step="0.01"> </p>
-            <p>Motive: <input type="text" name="motive" required> </p>
+    <div class="form-container">
+        <p>Select an account to send them some money!</Select></p>		
+	    <form action="#" th:action="@{/RequestMovement}" method="POST">
+            <label>User ID</label> 
+            <input type="number" name="inuserid" required> <br>
+            <label>Account ID</label> 
+            <input type="number" name="inaccountid" required> <br>
+            <label>Amount</label> 
+            <input type="number" name="amount" required min="0" step="0.01"><br>
+            <label>Motive</label> 
+            <input type="text" name="motive" required><br>
             <input type="hidden" name="outaccountid" required th:value="${account.ID}">
-            <input type="submit" value="Request Movement"></fieldset>
-        </fieldset>		
-	</form>
+            <input class="submit" type="submit" value="Request Movement"></fieldset>
+	    </form>
+    </div>
 </body>
 </html>

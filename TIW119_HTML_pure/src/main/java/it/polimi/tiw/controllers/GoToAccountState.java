@@ -114,6 +114,7 @@ public class GoToAccountState extends HttpServlet {
 		ctx.setVariable("account", account);
 		ctx.setVariable("inmovements", inMovs);
 		ctx.setVariable("outmovements", outMovs);
+		ctx.setVariable("backPath", "/Home");
 		String path = "/WEB-INF/AccountState.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}

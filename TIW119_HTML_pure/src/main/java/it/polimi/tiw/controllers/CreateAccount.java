@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -72,7 +71,7 @@ public class CreateAccount extends HttpServlet {
 		User user = (User) session.getAttribute("user");
 
 
-		String accountName = StringEscapeUtils.escapeJava(request.getParameter("name"));
+		String accountName = request.getParameter("name");
 		
 		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
 			toHomeWithError(request, response, ServletError.MISSING_DATA);

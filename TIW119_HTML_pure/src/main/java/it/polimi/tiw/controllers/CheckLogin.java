@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -61,8 +60,8 @@ public class CheckLogin extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String username = StringEscapeUtils.escapeJava(request.getParameter("username"));
-		String password = StringEscapeUtils.escapeJava(request.getParameter("password"));
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		if(username == null || username.isEmpty() || password == null || password.isEmpty()){ //Checks that POST parameters are not empty
 			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
 			return;

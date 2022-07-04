@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>TIW 119 - Home page</title>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+    <title>TIW 119 - Home page</title>
+    <link rel="stylesheet" type="text/css" href="../css/Global.css" th:href="@{/css/Global.css}"/>
+	<link rel="stylesheet" type="text/css" href="../css/Home.css" th:href="@{/css/Home.css}"/>
 </head>
 <body>
+    <div th:replace="/WEB-INF/TopBar :: top-bar">
+        Top bar placeholder
+    </div>
     <h1>Home page</h1>
-    <p th:text="${'Welcome back ' + session.user.name + ' ' + session.user.surname}"></p>
+    <h3 th:text="${'Welcome back ' + session.user.name + ' ' + session.user.surname}"></h3>
 
-    <p th:text=" ${generalError}"></p>
+    <p class="error" th:if="${generalError != null}" th:text=" ${generalError}">Error</p>
 
-    <div th:if="${accounts != null and not accounts.isEmpty()}">
+    <div class="table-container" th:if="${accounts != null and not accounts.isEmpty()}">
         <table class="account-table" >
             <thead>
                 <tr>
@@ -33,19 +38,26 @@
                     <td> 23789612369612386</td>
                     <td> lo stato</td>
                 </tr>
+                <tr>
+                    <td> Conto esempio 2</td>
+                    <td> name Conto esempio 2</td>
+                    <td> 23789612369612386</td>
+                    <td> lo stato 2</td>
+                </tr>
             </tbody>
         </table>
     </div>
     <p th:if="${accounts == null or accounts.isEmpty()}">No accounts available! Create one with the form below.</p>
 
-    
-	<form action="#" th:action="@{/CreateAccount}" method="POST">
-        <fieldset>		
-            <p>Account Name: <input type="text" name="name" required> </p>
-            <p>Balance: <input type="number" name="balance" required min="0" step="0.01"> </p>
-            <input type="submit" value="Create Account"></fieldset>
-            <p th:text=" ${accountError}"></p>
-        </fieldset>		
-	</form>
+    <div class="form-container">
+        <form action="#" th:action="@{/CreateAccount}" method="POST">		
+                <label for="name">Account Name</label>
+                <input type="text" name="name" required> <br>
+                <label for="balance">Balance </label> 
+                <input type="number" name="balance" required min="0" step="0.01"> <br>
+                <input class="submit" type="submit" value="Create Account"></fieldset>
+                <p class="error" th:if="${accountError != null}" th:text=" ${accountError}">Error</p>
+        </form>
+    </div>
 </body>
 </html>
