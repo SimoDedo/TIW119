@@ -8,7 +8,7 @@ public enum ServletError {
     NOT_LOGGED_IN("Login before trying to access any page!"),
     MISSING_CREDENTIALS("Missing or empty credentials"),
     MISSING_DATA("Missing data in form!"),
-    NUMBER_FORMAT("Number not formatted correctly. Use \".\" to insert decimals!"),
+    NUMBER_FORMAT("Number not formatted correctly"),
     NEGATIVE_BALANCE("Balance can't be negative!"),
     NEGATIVE_AMOUNT("Amount can't be negative!"),
     USER_NOT_FOUND("No user exists with given credentials"),

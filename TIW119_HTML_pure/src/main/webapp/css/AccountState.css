@@ -5,7 +5,7 @@
     margin-right: 10%;
     margin-top: 10px;
     margin-bottom: 30px;
-    box-shadow: 0px 10px 20px rgba( 0, 0, 0, 0.2 );
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .table-container-account{
@@ -13,7 +13,7 @@
     margin-right: 30%;
     margin-top: 10px;
     margin-bottom: 30px;
-    box-shadow: 0px 10px 20px rgba( 0, 0, 0, 0.2 );
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -25,8 +25,8 @@
     border-collapse: collapse;
     width: 100%;
     max-width: 100%;
-    white-space: nowrap;
     background-color: white;
+    word-break: break-word;
 }
 
 .table td, .table th {
@@ -41,13 +41,13 @@
 
 .table thead th {
     color: #ffffff;
-    background: #4FC3A1;
+    background: #54d3c2;
 }
 
 
 .table thead th:nth-child(odd) {
     color: #ffffff;
-    background: #324960;
+    background: #4c7196;
 }
 
 .table tr:nth-child(even) {
@@ -92,7 +92,8 @@
         overflow-y: auto;
         width: 120px;
         font-size: 15px;
-        text-overflow: ellipsis;
+        word-break:break-word;
+
     }
     .table thead th {
         text-align: left;

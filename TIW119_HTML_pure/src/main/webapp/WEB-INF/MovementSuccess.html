@@ -16,7 +16,7 @@
         </h1>
         Date of the movement: <span th:text="${#dates.format(movement.date, 'dd-MM-yyyy HH:mm:ss')}">10-10-1010</span><br>
         <h1>
-            Your Account <span th:text="${'(ID __outAccount.ID__)'}">1</span>
+            Your Account <span th:text="${'(ID ' + outAccount.ID + ')'}">1</span>
         </h1>
         <div class="table-container">
             <table class="success-table" >
@@ -37,7 +37,7 @@
             </table>
         </div>
         <h1>
-            Destination Account <span th:text="${'(ID __inAccount.ID__)'}">2</span>
+            Destination Account <span th:text="${'(ID ' + inAccount.ID + ')'}">2</span>
         </h1>
         <div class="table-container">
             <table class="success-table" >

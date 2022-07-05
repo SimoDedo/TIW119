@@ -16,8 +16,8 @@
     border-collapse: collapse;
     width: 100%;
     max-width: 100%;
-    white-space: nowrap;
     background-color: white;
+    word-break:break-word;
 }
 
 .account-table td, .account-table th {
@@ -32,13 +32,13 @@
 
 .account-table thead th {
     color: #ffffff;
-    background: #4FC3A1;
+    background: #54d3c2;
 }
 
 
 .account-table thead th:nth-child(odd) {
     color: #ffffff;
-    background: #324960;
+    background: #4c7196;
 }
 
 .account-table tr:nth-child(even) {
@@ -83,7 +83,7 @@
         overflow-y: auto;
         width: 120px;
         font-size: 15px;
-        text-overflow: ellipsis;
+        word-break:break-word;
     }
     .account-table thead th {
         text-align: left;

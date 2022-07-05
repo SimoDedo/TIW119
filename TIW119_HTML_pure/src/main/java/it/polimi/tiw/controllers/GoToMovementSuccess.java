@@ -83,9 +83,9 @@ public class GoToMovementSuccess extends HttpServlet {
 
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("inAccount", inAccount);
-		ctx.setVariable("outAccount", outAccount);
 		ctx.setVariable("movement", movement);
+		ctx.setVariable("outAccount", outAccount);
+		ctx.setVariable("inAccount", inAccount);
 		ctx.setVariable("backPath", "/AccountState?accountid=" + outAccount.getID());
 		String path = "/WEB-INF/MovementSuccess.html";
 		templateEngine.process(path, ctx, response.getWriter());

@@ -74,13 +74,13 @@ public class RequestMovement extends HttpServlet {
 		User outUser = (User) session.getAttribute("user");
 
 		int outAccountID;
-		try{ //Checks that the source account ID is valid. If it isn't, redirects to login. If it is, all next errors can redirect to movement failure.
+		try{ //Checks that the source account ID is valid. If it isn't, redirects to home. If it is, all next errors can redirect to movement failure.
 			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
 		}catch(NumberFormatException | NullPointerException e){ 
 			if(e instanceof NullPointerException)
-				toLoginWithError(request, response, ServletError.MISSING_DATA);
+				toHomeWithError(request, response, ServletError.MISSING_DATA);
 			if(e instanceof NumberFormatException)
-				toLoginWithError(request, response, ServletError.NUMBER_FORMAT);
+				toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
 			return;
 		}
 
@@ -156,7 +156,6 @@ public class RequestMovement extends HttpServlet {
 		try { //Creates the movement
 			movementDAO.requestMovement(date, BigDecimal.valueOf(amount), motive, inAccount, outAccount);
 		} catch (SQLException e1) {
-			e1.printStackTrace();
 			toMovementFailure(request, response, ServletError.IE_CREATE_MOVEMENT, outAccountID);
 			return;
 		}
@@ -182,6 +181,11 @@ public class RequestMovement extends HttpServlet {
 		ctx.setVariable("generalError", signupErrorMsg.toString());
 		String path = "/WEB-INF/Login.html";
 		templateEngine.process(path, ctx, response.getWriter());
+	}
+
+	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
+		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
+		response.sendRedirect(path);
 	}
 
 	private void toMovementFailure(HttpServletRequest request, HttpServletResponse response, ServletError errorMsg, int outAccountID) throws IOException{
