@@ -114,6 +114,9 @@ public class UserDAO {
             con.rollback();
             throw e;
         }
+		finally {
+			con.setAutoCommit(true);
+		}
         
     }
 }

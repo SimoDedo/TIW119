@@ -118,6 +118,9 @@ public class MovementDAO {
             con.rollback();
             throw e;
         }
+        finally {
+            con.setAutoCommit(true);
+        }
         
     }
 }

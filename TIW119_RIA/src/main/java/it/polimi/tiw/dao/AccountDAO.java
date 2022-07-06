@@ -93,6 +93,9 @@ public class AccountDAO {
                 con.rollback();
                 throw e;
             }
+            finally {
+                con.setAutoCommit(true);
+            }
             
         }
 
