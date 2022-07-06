@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+  <display-name>TIW119_HTML_pure</display-name>
+  <context-param>
+    <param-name>dbUrl</param-name>
+    <param-value>jdbc:mysql://localhost:3306/db_gestione_spese?serverTimezone=UTC</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbUser</param-name>
+    <param-value>root</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbPassword</param-name>
+    <param-value>TIW119</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbDriver</param-name>
+    <param-value>com.mysql.cj.jdbc.Driver</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>LoggedChecker</filter-name>
+    <filter-class>it.polimi.tiw.filters.LoggedChecker</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LoggedChecker</filter-name>
+      <url-pattern>/Home</url-pattern>
+      <url-pattern>/CreateAccount</url-pattern>
+      <url-pattern>/AccountState</url-pattern>
+      <url-pattern>/RequestMovement</url-pattern>
+      <url-pattern>/MovementFailure</url-pattern>
+      <url-pattern>/MovementSuccess</url-pattern>
+  </filter-mapping>
+</web-app>

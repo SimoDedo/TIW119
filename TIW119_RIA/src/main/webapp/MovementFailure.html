@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+    <title>TIW 119 - Movement Failure</title>
+    <link rel="stylesheet" type="text/css" href="../css/Global.css" th:href="@{/css/Global.css}"/>
+</head>
+<body>
+    <div th:replace="/TopBar :: top-bar">
+        Top bar placeholder
+    </div>
+    <div>
+        <h1>Something went wrong!!</h1>
+        <p class="error" th:text=" ${movementError}">Errore!</p>
+    </div>
+</body>
+</html>
