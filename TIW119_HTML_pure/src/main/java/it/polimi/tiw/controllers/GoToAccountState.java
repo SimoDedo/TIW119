@@ -58,11 +58,6 @@ public class GoToAccountState extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		
-		if(session.isNew() || session.getAttribute("user") == null ){ //Checks that user has logged in (and is thus saved in the session)
-			toLoginWithError(request, response, ServletError.NOT_LOGGED_IN);
-			return;
-		}
 		User user = (User) session.getAttribute("user");
 
 		String accountidString = request.getParameter("accountid");
@@ -105,17 +100,13 @@ public class GoToAccountState extends HttpServlet {
 			return;
 		}
 
-		//Sorts lists by date
-		inMovs.sort((mov1, mov2) -> - mov1.getDate().compareTo(mov2.getDate()));
-		outMovs.sort((mov1, mov2) -> - mov1.getDate().compareTo(mov2.getDate()));
-
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("account", account);
 		ctx.setVariable("inmovements", inMovs);
 		ctx.setVariable("outmovements", outMovs);
 		ctx.setVariable("backPath", "/Home");
-		String path = "/WEB-INF/AccountState.html";
+		String path = "/AccountState.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -124,14 +115,6 @@ public class GoToAccountState extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
-	}
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError generalErrorMsg) throws IOException{
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("generalError", generalErrorMsg.toString());
-		String path = "/WEB-INF/Login.html";
-		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{

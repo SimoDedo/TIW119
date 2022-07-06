@@ -58,7 +58,7 @@ public class AccountDAO {
         }
 
         public Account getAccountByName(String name) throws SQLException {
-            String query = "SELECT  id, name, balance, userid FROM tiw119.account  WHERE name = ?";
+            String query = "SELECT  id, name, balance, userid FROM tiw119.account  WHERE BINARY name = ?";
             try (PreparedStatement pstatement = con.prepareStatement(query);) {
                 pstatement.setString(1, name);
                 try (ResultSet result = pstatement.executeQuery();) {

@@ -56,11 +56,6 @@ public class GoToMovementSuccess extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		
-		if(session.isNew() || session.getAttribute("user") == null ){ //Checks that user has logged in (and is thus saved in the session)
-			toLoginWithError(request, response, ServletError.NOT_LOGGED_IN);
-			return;
-		}
 
 		Movement movement = (Movement) session.getAttribute("movementMade");
 		if(movement == null){ //Checks that there is a movement that requires confirmation to be shown
@@ -87,7 +82,7 @@ public class GoToMovementSuccess extends HttpServlet {
 		ctx.setVariable("outAccount", outAccount);
 		ctx.setVariable("inAccount", inAccount);
 		ctx.setVariable("backPath", "/AccountState?accountid=" + outAccount.getID());
-		String path = "/WEB-INF/MovementSuccess.html";
+		String path = "/MovementSuccess.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -96,14 +91,6 @@ public class GoToMovementSuccess extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
-	}
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError signupErrorMsg) throws IOException{
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("generalError", signupErrorMsg.toString());
-		String path = "/WEB-INF/Login.html";
-		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{

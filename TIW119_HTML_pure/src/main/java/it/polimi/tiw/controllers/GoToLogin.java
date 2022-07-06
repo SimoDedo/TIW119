@@ -18,6 +18,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.ServletError;
 
 /**
  * Servlet implementation class GoToLogin
@@ -51,7 +52,18 @@ public class GoToLogin extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		templateEngine.process("/WEB-INF/Login.html", ctx, response.getWriter());
+
+		Integer errorid = ServletError.getErrorID(request.getParameter("errorid")); 
+		Integer loginErrorid = ServletError.getErrorID(request.getParameter("loginErrorid")); 
+		Integer signupErrorid = ServletError.getErrorID(request.getParameter("signupErrorid")); 
+
+		if(errorid != null)
+			ctx.setVariable("generalError", ServletError.values()[errorid].toString());
+		if(loginErrorid != null)
+			ctx.setVariable("loginError", ServletError.values()[loginErrorid].toString());
+		if(signupErrorid != null)
+			ctx.setVariable("signupError", ServletError.values()[signupErrorid].toString());
+		templateEngine.process("/Login.html", ctx, response.getWriter());
 	}
 
 	/**

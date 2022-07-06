@@ -22,7 +22,7 @@ public class MovementDAO {
 
     public List<Movement> getIncomingMovementsByAccount(int accountID) throws SQLException{
         List<Movement> movements = new ArrayList<>();
-        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE inAccountid = ?";
+        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE inAccountid = ? ORDER BY date DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setInt(1, accountID);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -43,7 +43,7 @@ public class MovementDAO {
 
     public List<Movement> getOutgoingMovementsByAccount(int accountID) throws SQLException{
         List<Movement> movements = new ArrayList<>();
-        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE outAccountid = ?";
+        String query = "SELECT  id, date, amount, motive, inAccountid, outAccountid FROM tiw119.movement  WHERE outAccountid = ? ORDER BY date DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query);) {
             pstatement.setInt(1, accountID);
             try (ResultSet result = pstatement.executeQuery();) {

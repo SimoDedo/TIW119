@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
@@ -14,11 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Movement;
@@ -36,7 +30,6 @@ import it.polimi.tiw.utils.ServletError;
 public class RequestMovement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
-	private TemplateEngine templateEngine;   
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -47,12 +40,6 @@ public class RequestMovement extends HttpServlet {
 
 	public void init() throws UnavailableException{
 		connection = ConnectionHandler.getConnection(getServletContext());
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	/**
@@ -67,10 +54,6 @@ public class RequestMovement extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		if(session.isNew() || session.getAttribute("user") == null ){ //Checks that user has logged in (and is thus saved in the session)
-			toLoginWithError(request, response, ServletError.NOT_LOGGED_IN);
-			return;
-		}
 		User outUser = (User) session.getAttribute("user");
 
 		int outAccountID;
@@ -106,8 +89,8 @@ public class RequestMovement extends HttpServlet {
 				toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
 			return;
 		}
-		if( amount < 0){ //Checks that the given amount is positive
-			toMovementFailure(request, response, ServletError.NEGATIVE_AMOUNT, outAccountID);
+		if( amount <= 0){ //Checks that the given amount is positive
+			toMovementFailure(request, response, ServletError.NEGATIVE_OR_ZERO_AMOUNT, outAccountID);
 			return;
 		}
 		if(inAccountID == outAccountID){
@@ -174,27 +157,14 @@ public class RequestMovement extends HttpServlet {
 		response.sendRedirect(path);
 	}
 
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError signupErrorMsg) throws IOException{
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("generalError", signupErrorMsg.toString());
-		String path = "/WEB-INF/Login.html";
-		templateEngine.process(path, ctx, response.getWriter());
-	}
-
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
 		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
 		response.sendRedirect(path);
 	}
 
 	private void toMovementFailure(HttpServletRequest request, HttpServletResponse response, ServletError errorMsg, int outAccountID) throws IOException{
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("movementError", errorMsg.toString());
-		ctx.setVariable("backPath", "/AccountState?accountid=" + outAccountID);
-		String path = "/WEB-INF/MovementFailure.html";
-		templateEngine.process(path, ctx, response.getWriter());
+		String path = getServletContext().getContextPath() + "/MovementFailure?accountid=" + outAccountID +"&errorid=" + errorMsg.ordinal();
+		response.sendRedirect(path);
 	}
 
 	public void destroy() {

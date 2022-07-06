@@ -3,8 +3,6 @@ package it.polimi.tiw.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -23,23 +21,22 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
-
 import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.utils.ServletError;
 
 /**
- * Servlet implementation class GoToHome
+ * Servlet implementation class GetAccountState
  */
-@WebServlet("/Home")
-public class GoToHome extends HttpServlet {
+@WebServlet("/MovementFailure")
+public class GoToMovementFailure extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
-	private TemplateEngine templateEngine;
+	private TemplateEngine templateEngine;   
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GoToHome() {
+    public GoToMovementFailure() {
         super();
     }
 
@@ -60,27 +57,44 @@ public class GoToHome extends HttpServlet {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
 
-		List<Account> accounts = new ArrayList<>();
-		AccountDAO accountDAO = new AccountDAO(connection);
-		try { //Retrieves the accounts to put in the template
-			accounts = accountDAO.getAccountsByUser(user.getID());
-		} catch (SQLException e) {
-			session.invalidate();
-			toLoginWithError(request, response, ServletError.IE_RETRIEVE_ACC);
+		String accountidString = request.getParameter("accountid");
+		Integer accountid = null;
+		try {
+            accountid = Integer.valueOf(accountidString);	
+		} catch (NumberFormatException e) { //Checks that the accountid parameter is actually a number
+			toHomeWithError(request, response, ServletError.ACC_ID_FORMAT);
 			return;
 		}
 
-		Integer errorid = ServletError.getErrorID(request.getParameter("errorid")); 
-		Integer accErrorid = ServletError.getErrorID(request.getParameter("accErrorid")); 
+        AccountDAO accountDAO = new AccountDAO(connection);
+		Account account;
+		try {
+			account = accountDAO.getAccountByID(accountid);	
+		} catch (SQLException e) {
+			toHomeWithError(request, response, ServletError.IE_RETRIEVE_ACC);
+			return;
+		}
 
-		ServletContext servletContext = getServletContext();
+		if(account == null){ //Checks that the account actually exists
+			toHomeWithError(request, response, ServletError.ACC_NOT_FOUND);
+			return;
+		}
+		if(account.getOwnerID() != user.getID()){ //Check that the logged user actually owns the account
+			toHomeWithError(request, response, ServletError.ACC_NOT_OWNED);
+			return;
+		}
+        
+        Integer errorid = ServletError.getErrorID(request.getParameter("errorid"));
+        if(errorid == null){
+            toHomeWithError(request, response, ServletError.ACC_ID_FORMAT);
+			return;
+        }
+
+        ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("accounts", accounts);
-		if(accErrorid != null) //Checks if an error is to be shown in the template
-			ctx.setVariable("accountError", ServletError.values()[accErrorid].toString());
-		if(errorid != null) //Checks if an error is to be shown in the template
-			ctx.setVariable("generalError", ServletError.values()[errorid].toString());
-		String path = "/Home.html";
+		ctx.setVariable("movementError", ServletError.values()[errorid].toString());
+		ctx.setVariable("backPath", "/AccountState?accountid=" + accountid);
+		String path = "/MovementFailure.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -91,8 +105,8 @@ public class GoToHome extends HttpServlet {
 		doGet(request, response);
 	}
 
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError generalErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/?errorid=" + generalErrorMsg.ordinal();
+	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
+		String path = getServletContext().getContextPath() + "/Home?errorid=" + accountErrorMsg.ordinal();
 		response.sendRedirect(path);
 	}
 
@@ -103,5 +117,6 @@ public class GoToHome extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 
 }

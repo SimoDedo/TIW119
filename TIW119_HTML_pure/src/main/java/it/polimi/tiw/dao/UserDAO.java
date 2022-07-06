@@ -14,7 +14,7 @@ public class UserDAO {
 	}
 
 	public User checkCredentials(String username, String password) throws SQLException {
-		String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE username = ? AND password = ?";
+		String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE BINARY username = ? AND BINARY password = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, username);
 			pstatement.setString(2, password);
@@ -57,7 +57,7 @@ public class UserDAO {
     }
 
     public User getUserByUsername(String username) throws SQLException{
-        String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE username = ?";
+        String query = "SELECT  id, username, email, name, surname FROM tiw119.user  WHERE BINARY username = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, username);
 			try (ResultSet result = pstatement.executeQuery();) {
