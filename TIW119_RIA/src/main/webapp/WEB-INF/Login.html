@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+<title>TIW 119 - Login page</title>
+<link rel="stylesheet" type="text/css" href="../css/Global.css" />
+<script src="js/Login.js" charset="utf-8" defer></script>
+
+</head>
+<body>
+
+	<h1>LOGIN</h1>
+
+	<div class="form-container" id="login_form">
+
+		<form action="#" method="POST">
+
+			<label for="username">Username</label>
+			<input id="user" class="login_field" type="text" required> <br><br>
+			<label for="password">Password</label>
+			<input id="pw" class="login_field" type="password" required> <br><br>
+			<input type="submit" id="b1" value="Login"> <br><br>
+			<a id="signup" href="#"> Sign Up </a>
+		</form>
+
+	</div>
+
+	<div class="form-container" id="signup_form" hidden="true">
+
+		<form>
+			<label for="email">Email</label> <input id="email"
+				class="signup_field" type="email" required> <br>
+			<br> <label for="First Name">First Name</label> <input
+				id="first name" class="signup_field" type="text" required> <br>
+			<br> <label for="Last Name">Last Name</label> <input
+				id="last name" class="signup_field" type="text" required> <br>
+			<br> <label for="Username">Username</label> <input id="username"
+				class="signup_field" type="text" required> <br>
+			<br> <label for="Password">Password</label> <input id="password"
+				class="signup_field" type="password" required> <br>
+			<br> <label for="Repeat Password">Repeat Password</label> <input
+				id="repeat password" class="signup_field" type="password" required>
+			<br>
+			<br> <input type="submit" id="b2" value="Sign Up"> <br>
+			<br>
+
+			<p id="signup error" class="error" hidden="true"></p>
+
+			<a id="login" href="#"> Login </a>
+		</form>
+
+	</div>
+
+
+</body>
+</html>
