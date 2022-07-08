@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+    <title>TIW 119 - Home page</title>
+    <link rel="stylesheet" type="text/css" href="../css/Global.css">
+	<link rel="stylesheet" type="text/css" href="../css/Home.css">
+	<script src="js/Home.js" charset="utf-8" defer></script>
+	
+</head>
+<body>
+
+	<div id="home view">
+      <h1>Home Page</h1>
+      <h3>Welcome back impiegato N07H34119D46FQ2M90</h3>
+
+      <div class="table-container">
+        <table class="account-table">
+          <thead>
+
+            <tr>
+              <th>Account ID</th>
+              <th>Account Name</th>
+              <th>Account Balance</th>
+              <th>Account status</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+            <td>placeholder ID</td>
+            <td>placeholder Name</td>
+            <td>placeholder Balance</td>
+            <td> <a class="show status" href="#">placeholder Status</a></td>
+          </tbody>
+        </table>
+
+      </div>
+
+      <a href="#" id="new account">Create new account</a> <br><br>
+      <div id="new account form" class="form-container" hidden="true">
+        <form action="POST">
+          <label for="Account Name">Account Name</label>
+          <input id="new account name" type="text" required> <br><br>
+          <label for="Balance">Balance</label>
+          <input id="new account balance" type="number" min="0" step="0.01" required>
+          <input type="submit" id="create new account" value="Create new account">
+        </form>
+      </div>
+    </div>
+
+    <div id="status view" hidden="true">
+    <h1>Account details</h1>
+      <div id="account info" class="table-container-account">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>User</th>
+              <th>Account ID</th>
+              <th>Account name</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>placeholder user ID</td>
+              <td>placeholder user</td>
+              <td>placeholder account ID</td>
+              <td>placeholder account name</td>
+              <td>placeholder balance</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <br>
+
+      <div id="incoming movements">
+        <h4>Incoming movements: these are the instances where you received money</h4>
+        <div class="table-container-movement">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Motive</th>
+                <th>Sender Account ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td> data molto data</td>
+                <td> 23423342423234</td>
+                <td> testo super lungo</td>
+                <td> 676678978989</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="outgoing movements">
+        <h4>Outgoing movements: these are the instances where you gave money</h4>
+        <div class="table-container-movement">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Motive</th>
+                <th>Recipient Account ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td> data molto data</td>
+                <td> 23423342423234</td>
+                <td> testo super lungo</td>
+                <td> 676678978989</td>
+              </tr>
+              <tr>
+                <td> data molto data</td>
+                <td> 23423342423234</td>
+                <td> testo super lungo</td>
+                <td> 676678978989</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    </div>
+	
+
+</body>
+</html>
