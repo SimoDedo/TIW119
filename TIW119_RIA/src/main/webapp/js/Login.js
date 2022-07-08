@@ -26,13 +26,13 @@ var checkEmailFields = function() {
     //todo change
     var email_error = document.getElementById("signup error");
 
-    if (atIndex === 0 || atIndex === email.length) {
+    if (atIndex === 0) {
 
       email_error.textContent = "Error! Email has no identifier!";
 
       return false;
 
-    } else if (atIndex === -1) { //no domain
+    } else if (atIndex === -1  || atIndex === email.length) { //no domain
 
       email_error.textContent = "Error! Email has no domain!";
       return false;
