@@ -27,6 +27,7 @@ import it.polimi.tiw.utils.ServletError;
 /**
  * Servlet implementation class GetAccountState
  */
+@Deprecated
 @WebServlet("/MovementFailure")
 public class GoToMovementFailure extends HttpServlet {
 	private static final long serialVersionUID = 1L;

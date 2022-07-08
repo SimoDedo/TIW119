@@ -59,15 +59,18 @@ public class CheckSignup extends HttpServlet {
 		if(username == null || username.isEmpty() || email == null || email.isEmpty()
 		|| password == null || password.isEmpty() || repeatPassword == null || repeatPassword.isEmpty()
 		|| name == null || name.isEmpty() || surname == null || surname.isEmpty()){ //Checks that POST parameters are not empty
-			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_CREDENTIALS.toString());
 			return;
 		}
 		if(! password.equals(repeatPassword)){ //Checks that passwords match
-			toLoginWithError(request, response, ServletError.PASSWORD_MISMATCH);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.PASSWORD_MISMATCH.toString());
 			return;
 		}
 		if(! isEmailValid(email)){ //Checks that email is well formed
-			toLoginWithError(request, response, ServletError.EMAIL_FORMAT);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.EMAIL_FORMAT.toString());
 			return;
 		}
 		
@@ -79,23 +82,27 @@ public class CheckSignup extends HttpServlet {
 			usernameUser = userDAO.getUserByUsername(username);
 			emailUser = userDAO.getUserByEmail(email);
 		} catch (SQLException e) {
-			toLoginWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_CHECK_CREDENTIALS.toString());
 			return;
 		}
 
 		if(usernameUser != null){ //Checks that no other user with the same username exists
-			toLoginWithError(request, response, ServletError.USERNAME_ALREADY_EXISTS);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println(ServletError.USERNAME_ALREADY_EXISTS.toString());
 			return;
 		}
 		if(emailUser != null){ //Checks that no other user with the same email exists
-			toLoginWithError(request, response, ServletError.EMAIL_ALREADY_EXISTS);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println(ServletError.EMAIL_ALREADY_EXISTS.toString());
 			return;
 		}
 
 		try { //Registers the user in the database
 			userDAO.registerUser(name, surname, username, email, password);
 		} catch (SQLException e1) {
-			toLoginWithError(request, response, ServletError.IE_REGISTRATION);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_REGISTRATION.toString());
 			return;
 		}
 
@@ -103,19 +110,17 @@ public class CheckSignup extends HttpServlet {
 		try { //Logs the newly registered user
 			toLog = userDAO.getUserByUsername(username);
 		} catch (SQLException e) {
-			toLoginWithError(request, response, ServletError.IE_USER_NOT_FOUND);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_USER_NOT_FOUND.toString());
 			return;
 		}
 
 		request.getSession().setAttribute("user", toLog);
-		String path = getServletContext().getContextPath() + "/Home";
-		response.sendRedirect(path);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().println(username);
 	
-	}
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError signupErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/?signupErrorid=" + signupErrorMsg.ordinal();
-		response.sendRedirect(path);
 	}
 
 	private boolean isEmailValid(String email){

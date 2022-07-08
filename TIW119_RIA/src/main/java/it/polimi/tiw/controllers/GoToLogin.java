@@ -23,6 +23,7 @@ import it.polimi.tiw.utils.ServletError;
 /**
  * Servlet implementation class GoToLogin
  */
+@Deprecated
 @WebServlet("")
 public class GoToLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;

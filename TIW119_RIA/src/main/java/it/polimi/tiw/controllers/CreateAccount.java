@@ -57,7 +57,8 @@ public class CreateAccount extends HttpServlet {
 		String accountName = request.getParameter("name");
 		
 		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
-			toHomeWithError(request, response, ServletError.MISSING_DATA);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_DATA.toString());
 			return;
 		}
 
@@ -65,11 +66,13 @@ public class CreateAccount extends HttpServlet {
 		try{ 
 			balance = Double.parseDouble(request.getParameter("balance"));
 		}catch(NumberFormatException | NullPointerException e){ //Checks that the given balance is actually a number
-			toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
 			return;
 		}
 		if( balance < 0){ //Checks that the given balance is positive
-			toHomeWithError(request, response, ServletError.NEGATIVE_BALANCE);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.NEGATIVE_BALANCE.toString());
 			return;
 		}
 		
@@ -78,30 +81,33 @@ public class CreateAccount extends HttpServlet {
 		try {
 			account = accountDAO.getAccountByName(accountName);
 		} catch (SQLException e) {
-			toHomeWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_RETRIEVE_ACC.toString());
 			return;
 		}
 
 		if(account != null){ //Checks that no other account exists with the same name
-			toHomeWithError(request, response, ServletError.ACC_NAME_ALREADY_EXISTS);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println(ServletError.ACC_NAME_ALREADY_EXISTS.toString());
 			return;
 		}
 
+		int newAccountid;
 		try { //Creates the bank account
-			accountDAO.createAccount(accountName, BigDecimal.valueOf(balance), user.getID());
+			newAccountid = accountDAO.createAccount(accountName, BigDecimal.valueOf(balance), user.getID());
 		} catch (SQLException e1) {
-			toHomeWithError(request, response, ServletError.IE_CREATE_ACC);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_CREATE_ACC.toString());
 			return;
 		}
 
 		String path = getServletContext().getContextPath() + "/Home";
 		response.sendRedirect(path);
 		
-	}
-
-	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
-		response.sendRedirect(path);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().println(newAccountid);
 	}
 
 	public void destroy() {

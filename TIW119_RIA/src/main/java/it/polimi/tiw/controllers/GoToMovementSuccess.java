@@ -28,6 +28,7 @@ import it.polimi.tiw.utils.ServletError;
 /**
  * Servlet implementation class GoToMovementSuccess
  */
+@Deprecated
 @WebServlet("/MovementSuccess")
 public class GoToMovementSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;

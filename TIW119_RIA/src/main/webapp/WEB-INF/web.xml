@@ -24,11 +24,25 @@
   </filter>
   <filter-mapping>
     <filter-name>LoggedChecker</filter-name>
-      <url-pattern>/Home</url-pattern>
+      <url-pattern>/Home.html</url-pattern>
+      <url-pattern>/GetAccountsData</url-pattern>
       <url-pattern>/CreateAccount</url-pattern>
-      <url-pattern>/AccountState</url-pattern>
+      <url-pattern>/GetMovementData</url-pattern>
       <url-pattern>/RequestMovement</url-pattern>
-      <url-pattern>/MovementFailure</url-pattern>
-      <url-pattern>/MovementSuccess</url-pattern>
+      <url-pattern>/GetContacts</url-pattern>
+      <url-pattern>/AddContact</url-pattern>
   </filter-mapping>
+  <filter>
+    <filter-name>NoCacher</filter-name>
+    <filter-class>it.polimi.tiw.filters.NoCacher</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>NoCacher</filter-name>
+      <url-pattern>/Home.html</url-pattern>
+      <url-pattern>/Login.html</url-pattern>
+  </filter-mapping>
+
+  <welcome-file-list>
+    <welcome-file>Login.html</welcome-file>
+  </welcome-file-list>
 </web-app>

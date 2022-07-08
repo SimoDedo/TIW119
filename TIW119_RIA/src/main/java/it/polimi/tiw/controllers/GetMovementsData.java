@@ -31,7 +31,7 @@ import it.polimi.tiw.utils.ServletError;
  * Servlet implementation class GetAccountState
  */
 @WebServlet("/AccountState")
-public class GoToAccountState extends HttpServlet {
+public class GetMovementsData extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;   
@@ -39,7 +39,7 @@ public class GoToAccountState extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GoToAccountState() {
+    public GetMovementsData() {
         super();
     }
 

@@ -51,7 +51,8 @@ public class CheckLogin extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		if(username == null || username.isEmpty() || password == null || password.isEmpty()){ //Checks that POST parameters are not empty
-			toLoginWithError(request, response, ServletError.MISSING_CREDENTIALS);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_CREDENTIALS.toString());
 			return;
 		}
 		
@@ -60,25 +61,24 @@ public class CheckLogin extends HttpServlet {
 		try {
 			user = userDAO.checkCredentials(username, password); 
 		} catch (SQLException e) {
-			toLoginWithError(request, response, ServletError.IE_CHECK_CREDENTIALS);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_CHECK_CREDENTIALS.toString());
 			return;
 		}
 
 	
 		if(user == null){ //Checks that credentials correspond to a user
-			toLoginWithError(request, response, ServletError.USER_NOT_FOUND);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println(ServletError.USER_NOT_FOUND.toString());
 			return;
 		}
 		else{
 			request.getSession().setAttribute("user", user);
-			String path = getServletContext().getContextPath() + "/Home";
-			response.sendRedirect(path);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().println(username);
 		}
-	}
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError loginErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/?loginErrorid=" + loginErrorMsg.ordinal();
-		response.sendRedirect(path);
 	}
 
 	public void destroy() {

@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
@@ -15,10 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
@@ -30,27 +28,20 @@ import it.polimi.tiw.utils.ServletError;
 /**
  * Servlet implementation class GoToHome
  */
-@WebServlet("/Home")
-public class GoToHome extends HttpServlet {
+@WebServlet("/GetAccountsData")
+public class GetAccountsData extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
-	private TemplateEngine templateEngine;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GoToHome() {
+    public GetAccountsData() {
         super();
     }
 
 	public void init() throws UnavailableException{
 		connection = ConnectionHandler.getConnection(getServletContext());
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	/**
@@ -65,23 +56,18 @@ public class GoToHome extends HttpServlet {
 		try { //Retrieves the accounts to put in the template
 			accounts = accountDAO.getAccountsByUser(user.getID());
 		} catch (SQLException e) {
-			session.invalidate();
-			toLoginWithError(request, response, ServletError.IE_RETRIEVE_ACC);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_RETRIEVE_ACC.toString());
 			return;
 		}
 
-		Integer errorid = ServletError.getErrorID(request.getParameter("errorid")); 
-		Integer accErrorid = ServletError.getErrorID(request.getParameter("accErrorid")); 
+		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
+		String json = gson.toJson(accounts);
 
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("accounts", accounts);
-		if(accErrorid != null) //Checks if an error is to be shown in the template
-			ctx.setVariable("accountError", ServletError.values()[accErrorid].toString());
-		if(errorid != null) //Checks if an error is to be shown in the template
-			ctx.setVariable("generalError", ServletError.values()[errorid].toString());
-		String path = "/Home.html";
-		templateEngine.process(path, ctx, response.getWriter());
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().println(json);
 	}
 
 	/**
@@ -89,11 +75,6 @@ public class GoToHome extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
-	}
-
-	private void toLoginWithError(HttpServletRequest request, HttpServletResponse response, ServletError generalErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/?errorid=" + generalErrorMsg.ordinal();
-		response.sendRedirect(path);
 	}
 
 	public void destroy() {

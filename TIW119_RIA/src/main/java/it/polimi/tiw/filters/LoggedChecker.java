@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.utils.ServletError;
 
 
 /**
@@ -41,14 +40,15 @@ public class LoggedChecker implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		String loginpath = req.getServletContext().getContextPath() + "/?errorid=";
+		String loginpath = req.getServletContext().getContextPath() + "/Login.html";
 		HttpSession s = req.getSession();
 		
 		User u = null;
         // check if the user is saved in session
 		u = (User) s.getAttribute("user");
 		if (u == null) {
-			loginpath = loginpath + ServletError.NOT_LOGGED_IN.ordinal();
+			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			res.setHeader("Location", loginpath);
 			res.sendRedirect(loginpath);
 			return;
 		}

@@ -77,7 +77,8 @@ public class AccountDAO {
             }
         }
 
-        public void createAccount(String name, BigDecimal balance, int userid) throws SQLException{
+        public int createAccount(String name, BigDecimal balance, int userid) throws SQLException{
+            int accountid = -1;
             String query = "INSERT into tiw119.account (name, balance, userid) VALUES (?, ?, ?)";
             balance.setScale(2);
             con.setAutoCommit(false);
@@ -87,7 +88,14 @@ public class AccountDAO {
                 pstatement.setInt(3, userid);
                 pstatement.executeUpdate();
                 
+                ResultSet generatedKeys = pstatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    accountid =  generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
                 con.commit();
+                return accountid;
             }
             catch(SQLException e){
                 con.rollback();
@@ -96,7 +104,6 @@ public class AccountDAO {
             finally {
                 con.setAutoCommit(true);
             }
-            
         }
 
 }

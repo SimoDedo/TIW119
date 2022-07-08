@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
 
 public class UserDAO {
@@ -119,4 +123,19 @@ public class UserDAO {
 		}
         
     }
+
+	public List<Account> getContacts(int userid) throws SQLException{
+		AccountDAO accountDAO = new AccountDAO(con);
+		List<Account> accounts = new ArrayList<>();
+		String query = "SELECT  accountid FROM tiw119.account  WHERE userid = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, userid);
+			try (ResultSet result = pstatement.executeQuery();) {
+					while(result.next()){
+						accounts.add(accountDAO.getAccountByID(result.getInt("accountid")));
+					}
+				}
+			}
+		return accounts;
+	}
 }
