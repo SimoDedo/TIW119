@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
 
 public class UserDAO {
@@ -120,22 +119,49 @@ public class UserDAO {
         }
 		finally {
 			con.setAutoCommit(true);
-		}
-        
+		} 
     }
 
-	public List<Account> getContacts(int userid) throws SQLException{
-		AccountDAO accountDAO = new AccountDAO(con);
-		List<Account> accounts = new ArrayList<>();
-		String query = "SELECT  accountid FROM tiw119.account  WHERE userid = ?";
+	public boolean hasContact(int ownerUserid, int contactUserid) throws SQLException{
+		String query = "SELECT  * FROM tiw119.contact  WHERE ownerUserid = ? AND contactUserid = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
-			pstatement.setInt(1, userid);
+			pstatement.setInt(1, ownerUserid);
+			pstatement.setInt(2, contactUserid);
+			try (ResultSet result = pstatement.executeQuery();) {
+				return result.isBeforeFirst();
+			}
+        }
+	}
+
+	public List<Integer> getContacts(int ownerUserid) throws SQLException{
+		List<Integer> accounts = new ArrayList<>();
+		String query = "SELECT contactUserid FROM tiw119.account  WHERE userid = ?";
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, ownerUserid);
 			try (ResultSet result = pstatement.executeQuery();) {
 					while(result.next()){
-						accounts.add(accountDAO.getAccountByID(result.getInt("accountid")));
+						accounts.add(result.getInt("contactUserid"));
 					}
 				}
 			}
 		return accounts;
 	}
+
+	public void addContact(int ownerUserid, int contactUserid) throws SQLException{
+        String query = "INSERT into tiw119.contact (ownerUserid, contactUserid) VALUES (?, ?)";
+        con.setAutoCommit(false);
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, ownerUserid);
+			pstatement.setInt(2, contactUserid);
+            pstatement.executeUpdate();
+            con.commit();
+        }
+        catch(SQLException e){
+            con.rollback();
+            throw e;
+        }
+		finally {
+			con.setAutoCommit(true);
+		} 
+    }
 }
