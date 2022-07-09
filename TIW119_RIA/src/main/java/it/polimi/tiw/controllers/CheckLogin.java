@@ -66,7 +66,6 @@ public class CheckLogin extends HttpServlet {
 			return;
 		}
 
-	
 		if(user == null){ //Checks that credentials correspond to a user
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println(ServletError.USER_NOT_FOUND.toString());

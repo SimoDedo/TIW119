@@ -100,9 +100,6 @@ public class CreateAccount extends HttpServlet {
 			response.getWriter().println(ServletError.IE_CREATE_ACC.toString());
 			return;
 		}
-
-		String path = getServletContext().getContextPath() + "/Home";
-		response.sendRedirect(path);
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");

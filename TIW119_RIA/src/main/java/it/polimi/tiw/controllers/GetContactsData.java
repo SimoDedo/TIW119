@@ -3,6 +3,7 @@ package it.polimi.tiw.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,25 +19,24 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.beans.Account;
-import it.polimi.tiw.beans.Movement;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
-import it.polimi.tiw.dao.MovementDAO;
+import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.utils.ServletError;
 
 /**
  * Servlet implementation class GetAccountState
  */
-@WebServlet("/GetMovementsData")
-public class GetMovementsData extends HttpServlet {
+@WebServlet("/GetContactsData")
+public class GetContactsData extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GetMovementsData() {
+    public GetContactsData() {
         super();
     }
 
@@ -51,57 +51,35 @@ public class GetMovementsData extends HttpServlet {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
 
-		String accountidString = request.getParameter("accountid");
-		Integer accountid = null;
+		UserDAO userDAO = new UserDAO(connection);
+		List<Integer> contactIDs = new ArrayList<>();
 		try {
-			accountid = Integer.valueOf(accountidString);	
-		} catch (NumberFormatException e) { //Checks that the accountid parameter is actually a number
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println(ServletError.ACC_ID_FORMAT.toString());
+			contactIDs = userDAO.getContacts(user.getID());
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_RETRIEVE_CONTACT.toString());
 			return;
 		}
+
+		//Map that contains contactUserid as key, and a list of their accountid as value to be sent to the client
+		HashMap<Integer, List<Integer>> contactsMap = new HashMap<>(); 
 		
 		AccountDAO accountDAO = new AccountDAO(connection);
-		Account account;
-		try {
-			account = accountDAO.getAccountByID(accountid);	
-		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(ServletError.IE_RETRIEVE_ACC.toString());
-			return;
-		}
+		List<Account> accountids = new ArrayList<>();
 
-		if(account == null){ //Checks that the account actually exists
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println(ServletError.ACC_NOT_FOUND.toString());
-			return;
+		for (Integer contactUserid : contactIDs) {
+			try {
+				accountids = accountDAO.getAccountsByUser(contactUserid);
+				contactsMap.put(contactUserid, accountids.stream().map(a -> a.getID()).toList());
+			} catch (SQLException e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().println(ServletError.IE_RETRIEVE_ACC.toString());
+				return;
+			}
 		}
-		if(account.getOwnerID() != user.getID()){ //Check that the logged user actually owns the account
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().println(ServletError.ACC_NOT_OWNED.toString());
-			return;
-		}
-
-		List<Movement> inMovs = null;
-		List<Movement> outMovs = null;
-
-		MovementDAO movementDAO = new MovementDAO(connection);
-
-		try {
-			inMovs = movementDAO.getIncomingMovementsByAccount(accountid);	
-			outMovs = movementDAO.getOutgoingMovementsByAccount(accountid);
-		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(ServletError.IE_RETRIEVE_MOV.toString());
-			return;
-		}
-				
-		HashMap<String, List<Movement>> map = new HashMap<>();
-		map.put("inMovs", inMovs);
-		map.put("outMovs", outMovs);
 		
 		Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create();
-		String json = gson.toJson(map);
+		String json = gson.toJson(contactsMap);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");

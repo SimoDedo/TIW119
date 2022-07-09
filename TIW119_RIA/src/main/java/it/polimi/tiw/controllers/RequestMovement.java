@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -56,45 +57,44 @@ public class RequestMovement extends HttpServlet {
 		HttpSession session = request.getSession();
 		User outUser = (User) session.getAttribute("user");
 
-		int outAccountID;
-		try{ //Checks that the source account ID is valid. If it isn't, redirects to home. If it is, all next errors can redirect to movement failure.
-			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
-		}catch(NumberFormatException | NullPointerException e){ 
-			if(e instanceof NullPointerException)
-				toHomeWithError(request, response, ServletError.MISSING_DATA);
-			if(e instanceof NumberFormatException)
-				toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
-			return;
-		}
-
+		
 		String motive = request.getParameter("motive");
-
+		
 		//Checks that POST parameters aren't empty
-		if(motive == null || motive.isEmpty()){ 
-			toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
+		if(motive == null || motive.isEmpty()){
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_DATA.toString());
 			return;
 		}
-
+		
+		int outAccountID;
 		int inUserID;
 		int inAccountID;
 		Double amount = null;
 		try{ 
+			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
 			inUserID = Integer.valueOf(request.getParameter("inuserid"));
 			inAccountID = Integer.valueOf(request.getParameter("inaccountid"));
 			amount = Double.valueOf(request.getParameter("amount"));
-		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually a number
-			if(e instanceof NullPointerException)
-				toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
-			if(e instanceof NumberFormatException)
-				toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
+		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually numbers
+			if(e instanceof NullPointerException){
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println(ServletError.MISSING_DATA.toString());
+			}
+			if(e instanceof NumberFormatException){
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
+			}
 			return;
 		}
 		if( amount <= 0){ //Checks that the given amount is positive
-			toMovementFailure(request, response, ServletError.NEGATIVE_OR_ZERO_AMOUNT, outAccountID);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.NEGATIVE_OR_ZERO_AMOUNT.toString());
 			return;
 		}
-		if(inAccountID == outAccountID){
-			toMovementFailure(request, response, ServletError.ACC_SAME, outAccountID);
+		if(inAccountID == outAccountID){ //Checks that movement isn't being made to itself
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.ACC_SAME.toString());
 			return;
 		}
 
@@ -103,11 +103,13 @@ public class RequestMovement extends HttpServlet {
 		try{
 			inUser = userDAO.getUserByID(inUserID);
 		}catch(SQLException e){
-			toMovementFailure(request, response, ServletError.IE_RETRIEVE_USER, outAccountID);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_RETRIEVE_USER.toString());
 			return;
 		}
 		if(inUser == null ){ //Checks that user exists
-			toMovementFailure(request, response, ServletError.USER_ID_NOT_FOUND, outAccountID);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.USER_ID_NOT_FOUND.toString());
 			return;
 		}
 
@@ -118,19 +120,23 @@ public class RequestMovement extends HttpServlet {
 			inAccount = accountDAO.getAccountByID(inAccountID);
 			outAccount = accountDAO.getAccountByID(outAccountID);
 		} catch (SQLException e) {
-			toMovementFailure(request, response, ServletError.IE_ACC_NOT_FOUND, outAccountID);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_ACC_NOT_FOUND.toString());
 			return;
 		}
 		if(inAccount == null || outAccount == null){ //Checks that accounts exists
-			toMovementFailure(request, response, ServletError.ACC_NOT_FOUND, outAccountID);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.ACC_NOT_FOUND.toString());
 			return;
 		}
 		if(inAccount.getOwnerID() != inUser.getID() || outAccount.getOwnerID() != outUser.getID() ){ //Checks that users own their accounts
-			toMovementFailure(request, response, ServletError.ACC_NOT_OWNED_BY_USER, outAccountID);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println(ServletError.ACC_NOT_OWNED_BY_USER.toString());
 			return;
 		}
 		if(outAccount.getBalance().doubleValue() < amount){
-			toMovementFailure(request, response, ServletError.ACC_INSUFFICIENT_BALANCE, outAccountID);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.ACC_INSUFFICIENT_BALANCE.toString());
 			return;
 		}
 
@@ -139,7 +145,8 @@ public class RequestMovement extends HttpServlet {
 		try { //Creates the movement
 			movementDAO.requestMovement(date, BigDecimal.valueOf(amount), motive, inAccount, outAccount);
 		} catch (SQLException e1) {
-			toMovementFailure(request, response, ServletError.IE_CREATE_MOVEMENT, outAccountID);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(ServletError.IE_CREATE_MOVEMENT.toString());
 			return;
 		}
 
@@ -150,21 +157,15 @@ public class RequestMovement extends HttpServlet {
 		movement.setInAccountID(inAccountID);
 		movement.setOutAccountID(outAccountID);
 
-		//Adds movement just made to session so that user can be redirected to a confirmation page and see the data
-		session.setAttribute("movementMade", movement);		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("movement", movement);
+		map.put("outAccount", outAccount);
+		map.put("inAccount", inAccount);
 
-		String path = getServletContext().getContextPath() + "/MovementSuccess";
-		response.sendRedirect(path);
-	}
-
-	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
-		response.sendRedirect(path);
-	}
-
-	private void toMovementFailure(HttpServletRequest request, HttpServletResponse response, ServletError errorMsg, int outAccountID) throws IOException{
-		String path = getServletContext().getContextPath() + "/MovementFailure?accountid=" + outAccountID +"&errorid=" + errorMsg.ordinal();
-		response.sendRedirect(path);
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().println(map);
 	}
 
 	public void destroy() {

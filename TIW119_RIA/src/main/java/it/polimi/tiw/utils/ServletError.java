@@ -26,16 +26,19 @@ public enum ServletError {
     ACC_SAME("You can't move money from and to the same account"),
     NO_MOVEMENT_MADE("You have not made any new movement"),
     NO_ERROR("The error id given in not a valid error id"),
+    CONTACT_ALREADY_PRESENT("The user is already saved in yuor contacts"),
     IE_RETRIEVE_USER("Internal error: unable to retrieve user data."),
     IE_RETRIEVE_ACC("Internal error: unable to retrieve account data."),
     IE_RETRIEVE_MOV("Internal error: can't retrieve account movements"),
+    IE_RETRIEVE_CONTACT("Internal error: can't retrieve contacts"),
     IE_REGISTRATION("Internal error: can't register user"),
     IE_CREATE_ACC("Internal error: can't create account"),
     IE_USER_NOT_FOUND("Internal error: can't find the registered user"),
     IE_ACC_NOT_FOUND("Internal error: can't find account with given ID"),
     IE_CHECK_CREDENTIALS("Internal error: can't check credentials"),
     IE_CREATE_MOVEMENT("Internal error: can't create movement"),
-    IE_CHECK_ACC_NAME("Internal error: can't check if name already exists");
+    IE_CHECK_ACC_NAME("Internal error: can't check if name already exists"),
+    IE_ADD_CONTACT("Internal error: can't add contact");
 
     private ServletError(String desc){
 
