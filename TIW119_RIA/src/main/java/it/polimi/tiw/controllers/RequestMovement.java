@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Movement;
 import it.polimi.tiw.beans.User;
@@ -63,7 +66,7 @@ public class RequestMovement extends HttpServlet {
 		//Checks that POST parameters aren't empty
 		if(motive == null || motive.isEmpty()){
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println(ServletError.MISSING_DATA.toString());
+			response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
 			return;
 		}
 		
@@ -79,7 +82,7 @@ public class RequestMovement extends HttpServlet {
 		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually numbers
 			if(e instanceof NullPointerException){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.MISSING_DATA.toString());
+				response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
 			}
 			if(e instanceof NumberFormatException){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -134,7 +137,7 @@ public class RequestMovement extends HttpServlet {
 			response.getWriter().println(ServletError.ACC_NOT_OWNED_BY_USER.toString());
 			return;
 		}
-		if(outAccount.getBalance().doubleValue() < amount){
+		if(outAccount.getBalance().doubleValue() < amount){ //Checks that balance is sufficient to make movement
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println(ServletError.ACC_INSUFFICIENT_BALANCE.toString());
 			return;
@@ -157,15 +160,18 @@ public class RequestMovement extends HttpServlet {
 		movement.setInAccountID(inAccountID);
 		movement.setOutAccountID(outAccountID);
 
-		HashMap<String, Object> map = new HashMap<>();
-		map.put("movement", movement);
-		map.put("outAccount", outAccount);
-		map.put("inAccount", inAccount);
+		HashMap<String, Object> movementMap = new HashMap<>();
+		movementMap.put("movement", movement);
+		movementMap.put("outAccount", outAccount);
+		movementMap.put("inAccount", inAccount);
+
+		Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create();
+		String json = gson.toJson(movementMap);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(map);
+		response.getWriter().write(json);
 	}
 
 	public void destroy() {

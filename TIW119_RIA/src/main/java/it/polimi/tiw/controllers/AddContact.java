@@ -57,7 +57,7 @@ public class AddContact extends HttpServlet {
 		}catch(NumberFormatException | NullPointerException e){ 
 			if(e instanceof NullPointerException){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.MISSING_DATA.toString());
+				response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
 			}
 			if(e instanceof NumberFormatException){
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -106,7 +106,7 @@ public class AddContact extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(contactUser.getID());
+		response.getWriter().print(contactUser.getID());
 	}
 
 	public void destroy() {

@@ -61,7 +61,7 @@ public class RequestMovement extends HttpServlet {
 			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
 		}catch(NumberFormatException | NullPointerException e){ 
 			if(e instanceof NullPointerException)
-				toHomeWithError(request, response, ServletError.MISSING_DATA);
+				toHomeWithError(request, response, ServletError.MISSING_FORM_DATA);
 			if(e instanceof NumberFormatException)
 				toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
 			return;
@@ -71,7 +71,7 @@ public class RequestMovement extends HttpServlet {
 
 		//Checks that POST parameters aren't empty
 		if(motive == null || motive.isEmpty()){ 
-			toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
+			toMovementFailure(request, response, ServletError.MISSING_FORM_DATA, outAccountID);
 			return;
 		}
 
@@ -84,7 +84,7 @@ public class RequestMovement extends HttpServlet {
 			amount = Double.valueOf(request.getParameter("amount"));
 		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually a number
 			if(e instanceof NullPointerException)
-				toMovementFailure(request, response, ServletError.MISSING_DATA, outAccountID);
+				toMovementFailure(request, response, ServletError.MISSING_FORM_DATA, outAccountID);
 			if(e instanceof NumberFormatException)
 				toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
 			return;
@@ -129,7 +129,7 @@ public class RequestMovement extends HttpServlet {
 			toMovementFailure(request, response, ServletError.ACC_NOT_OWNED_BY_USER, outAccountID);
 			return;
 		}
-		if(outAccount.getBalance().doubleValue() < amount){
+		if(outAccount.getBalance().doubleValue() < amount){ //Checks that balance is sufficient to make movement
 			toMovementFailure(request, response, ServletError.ACC_INSUFFICIENT_BALANCE, outAccountID);
 			return;
 		}

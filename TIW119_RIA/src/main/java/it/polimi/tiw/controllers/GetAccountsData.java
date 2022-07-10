@@ -53,7 +53,7 @@ public class GetAccountsData extends HttpServlet {
 
 		List<Account> accounts = new ArrayList<>();
 		AccountDAO accountDAO = new AccountDAO(connection);
-		try { //Retrieves the accounts to put in the template
+		try { //Retrieves the accounts to send the client
 			accounts = accountDAO.getAccountsByUser(user.getID());
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -61,13 +61,13 @@ public class GetAccountsData extends HttpServlet {
 			return;
 		}
 
-		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
+		Gson gson = new GsonBuilder().create();
 		String json = gson.toJson(accounts);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(json);
+		response.getWriter().write(json);
 	}
 
 	/**

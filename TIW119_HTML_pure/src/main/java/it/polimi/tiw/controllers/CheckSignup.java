@@ -119,7 +119,7 @@ public class CheckSignup extends HttpServlet {
 	}
 
 	private boolean isEmailValid(String email){
-		Pattern pattern = Pattern.compile("[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)");
+		Pattern pattern = Pattern.compile("^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
 		Matcher mat = pattern.matcher(email);
 		return mat.matches();
 	}

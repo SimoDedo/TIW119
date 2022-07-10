@@ -57,7 +57,7 @@ public class CreateAccount extends HttpServlet {
 		String accountName = request.getParameter("name");
 		
 		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
-			toHomeWithError(request, response, ServletError.MISSING_DATA);
+			toHomeWithError(request, response, ServletError.MISSING_FORM_DATA);
 			return;
 		}
 

@@ -58,7 +58,7 @@ public class CreateAccount extends HttpServlet {
 		
 		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println(ServletError.MISSING_DATA.toString());
+			response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
 			return;
 		}
 
@@ -104,7 +104,7 @@ public class CreateAccount extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(newAccountid);
+		response.getWriter().print(newAccountid);
 	}
 
 	public void destroy() {

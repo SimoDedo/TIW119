@@ -53,7 +53,7 @@ public class GetContactsData extends HttpServlet {
 
 		UserDAO userDAO = new UserDAO(connection);
 		List<Integer> contactIDs = new ArrayList<>();
-		try {
+		try { //Retrieves the contact ids
 			contactIDs = userDAO.getContacts(user.getID());
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -68,7 +68,7 @@ public class GetContactsData extends HttpServlet {
 		List<Account> accountids = new ArrayList<>();
 
 		for (Integer contactUserid : contactIDs) {
-			try {
+			try { //Retrives the accounts of each contact
 				accountids = accountDAO.getAccountsByUser(contactUserid);
 				contactsMap.put(contactUserid, accountids.stream().map(a -> a.getID()).toList());
 			} catch (SQLException e) {
@@ -78,13 +78,13 @@ public class GetContactsData extends HttpServlet {
 			}
 		}
 		
-		Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create();
+		Gson gson = new GsonBuilder().create();
 		String json = gson.toJson(contactsMap);
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(json);
+		response.getWriter().write(json);
 	}
 
 	/**
