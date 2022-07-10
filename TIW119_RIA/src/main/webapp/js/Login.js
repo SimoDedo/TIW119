@@ -1,105 +1,68 @@
-var checkNonEmptyFields = function(fields) {
+(function() {
+	var login_div = document.getElementById("login_div");
+	var signup_div = document.getElementById("signup_div");
+	var login_button = document.getElementById("login_button");
+	var signup_button = document.getElementById("signup_button");
+	var login_error = document.getElementById("login_error");
+	var signup_error = document.getElementById("signup_error");
+	var go_to_signup = document.getElementById("go_to_signup");
+	var go_to_login = document.getElementById("go_to_login");
+	var password_input = signup_button.closest("form").querySelector("input[name='password']");
+	var repeat_password_input = signup_button.closest("form").querySelector("input[name='repeatPassword']");
 
-  var nonEmpty = true;
+	//allow switching between login and signup view
+	go_to_signup.addEventListener("click", (e) => {
 
-  Array.from(fields).forEach((field) => {
-    if (field.value === "") {
+		e.target.closest("form").reset();
+		login_div.style.display = "none";
+		signup_div.style.display = "block";
 
-      field.placeholder = "Field " + field.id + " is required";
-      nonEmpty = false;
+	}, false);
 
-    }
-  });
+	go_to_login.addEventListener("click", (e) => {
 
-  return nonEmpty;
-};
+		e.target.closest("form").reset();
+		signup_div.style.display = "none";
+		login_div.style.display = "block";
 
-var checkEmailFields = function() {
+	}, false);
 
-  var email = document.getElementById("email").value;
+	//attack login function
+	login_button.addEventListener("click", (e) => {
 
-  if (email !== "") {
+		login_error.style.display = "none";
 
-    var atIndex = email.indexOf("@");
+		var form = e.target.closest("form");
+
+		if (form.checkValidity()) {
+			sendToServer("CheckLogin", form, login_error);
+		} else {
+			form.reportValidity();
+		}
+
+	}, false);
+
+	function sendToServer(request_url, form, error_div) {
+		makeCall("POST", request_url, form, function(request) {
+			switch (request.status) { //Get status code
+				case 200: //Okay
+					var data = JSON.parse(request.responseText);
+					//sessionStorage.setItem('id', data.id);
+					//sessionStorage.setItem('name', data.name);
+					window.location.href = "Home.html";
+					break;
+				case 400: // bad request
+				case 401: // unauthorized
+				case 500: // server error
+					error_div.textContent = request.responseText;
+					error_div.style.display = 'block';
+					break;
+				default: //Error
+					error_div.textContent = "Request reported status " + request.status;
+					error_div.style.display = 'block';
+			}
+		}, false);
+	}
 
 
-    //todo change
-    var email_error = document.getElementById("signup error");
-
-    if (atIndex === 0) {
-
-      email_error.textContent = "Error! Email has no identifier!";
-
-      return false;
-
-    } else if (atIndex === -1  || atIndex === email.length) { //no domain
-
-      email_error.textContent = "Error! Email has no domain!";
-      return false;
-
-    } else {
-
-      var dotIndex = email.indexOf(".", atIndex);
-
-
-      if (dotIndex === -1) {
-
-        email_error.textContent = "Error! Email has no domain!";
-        return false;
-
-      } else if (dotIndex === 1) { //point is right after the '@' sign
-
-        email_error.textContent = "Error! Missing email server domain!";
-        return false;
-
-      } else if (dotIndex === email.length) {
-
-        email_error.textContent = "Error! Missing top-level domain!";
-        return false;
-      }
-    }
-  } else { //virtually unreachable
-    return false;
-  }
-
-  return true;
-}
-
-var checkPasswords = function() {
-
-  var password = document.getElementById("password");
-  var repeat_password = document.getElementById("repeat password");
-
-  return password == repeat_password;
-}
-
-document.getElementById("signup").addEventListener("click", (e) => {
-
-  document.getElementById("signup_form").style.display = "block";
-  document.getElementById("login_form").style.display = "none";
-
-  document.getElementsByTagName("h1")[0].innerHTML = "SIGN UP";
-}, false)
-
-document.getElementById("login").addEventListener("click", (e) => {
-
-  document.getElementById("login_form").style.display = "block";
-  document.getElementById("signup_form").style.display = "none";
-
-  document.getElementsByTagName("h1")[0].innerHTML = "LOGIN";
-}, false)
-
-document.getElementById("b2").addEventListener("click", (e) => {
-
-  e.preventDefault();
-
-  if (!checkNonEmptyFields(document.getElementsByClassName("signup_field")) ||
-    !checkEmailFields() ||
-    !checkPasswords()) {
-    document.getElementById("signup error").style.display = "block";
-    return;
-  } else { //all inputs are correct
-
-  }
-
-}, false)
+})()

@@ -3,54 +3,62 @@
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
 <title>TIW 119 - Login page</title>
-<link rel="stylesheet" type="text/css" href="../css/Global.css" />
+<link rel="stylesheet" type="text/css" href="css/Global.css" />
+<link rel="stylesheet" type="text/css" href="css/Login.css" />
+<script src="js/utils.js" charset="utf-8" defer></script>
 <script src="js/Login.js" charset="utf-8" defer></script>
 
 </head>
 <body>
 
-	<h1>LOGIN</h1>
+	<div class="form-container" id="login_div">
 
-	<div class="form-container" id="login_form">
+		<h1>LOGIN</h1>
 
-		<form action="#" method="POST">
+		<form action="#">
 
-			<label for="username">Username</label>
-			<input id="user" class="login_field" type="text" required> <br><br>
-			<label for="password">Password</label>
-			<input id="pw" class="login_field" type="password" required> <br><br>
-			<input type="submit" id="b1" value="Login"> <br><br>
-			<a id="signup" href="#"> Sign Up </a>
+			<label for="username">Username</label> <input name="username"
+				type="text" required> <br>
+			<br> <label for="password">Password</label> <input
+				name="password" type="password" required> <br>
+			<br> <input type="button" id="login_button" value="Login">
+			<br>
+			<br>
+
+			<div id="login_error" class="error"></div>
+
+			<a id="go_to_signup" href="#">Sign Up</a>
 		</form>
 
 	</div>
 
-	<div class="form-container" id="signup_form" hidden="true">
+	<div class="form-container signup-div" id="signup_div">
 
+		<h1>SIGN UP</h1>
+		
 		<form>
-			<label for="email">Email</label> <input id="email"
-				class="signup_field" type="email" required> <br>
+			<label for="email">Email</label> <input name="email" type="email"
+				required> <br>
 			<br> <label for="First Name">First Name</label> <input
-				id="first name" class="signup_field" type="text" required> <br>
+				name="name" type="text" required> <br>
 			<br> <label for="Last Name">Last Name</label> <input
-				id="last name" class="signup_field" type="text" required> <br>
-			<br> <label for="Username">Username</label> <input id="username"
-				class="signup_field" type="text" required> <br>
-			<br> <label for="Password">Password</label> <input id="password"
-				class="signup_field" type="password" required> <br>
+				name="surname" type="text" required> <br>
+			<br> <label for="Username">Username</label> <input
+				name="username" type="text" required> <br>
+			<br> <label for="Password">Password</label> <input
+				name="password" type="password" required> <br>
 			<br> <label for="Repeat Password">Repeat Password</label> <input
-				id="repeat password" class="signup_field" type="password" required>
+				name="repeatPassword" type="password" required> <br>
+			<br> <input type="button" id="signup_button" value="Sign Up">
 			<br>
-			<br> <input type="submit" id="b2" value="Sign Up"> <br>
 			<br>
 
-			<p id="signup error" class="error" hidden="true"></p>
+			<div id="signup_error" class="error"></div>
 
-			<a id="login" href="#"> Login </a>
+			<a id="go_to_login" href="#"> Login </a>
 		</form>
 
 	</div>
-
 
 </body>
 </html>
