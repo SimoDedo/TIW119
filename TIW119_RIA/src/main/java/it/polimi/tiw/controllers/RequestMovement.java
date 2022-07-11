@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import it.polimi.tiw.utils.ServletError;
  * Servlet implementation class RequestMovement
  */
 @WebServlet("/RequestMovement")
+@MultipartConfig
 public class RequestMovement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;

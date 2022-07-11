@@ -6,11 +6,14 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
@@ -21,6 +24,7 @@ import it.polimi.tiw.utils.ServletError;
  * Servlet implementation class CheckLogin
  */
 @WebServlet("/CheckLogin")
+@MultipartConfig
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
@@ -72,11 +76,14 @@ public class CheckLogin extends HttpServlet {
 			return;
 		}
 		else{
+			Gson gson = new GsonBuilder().create();
+			String json = gson.toJson(username);
+			
 			request.getSession().setAttribute("user", user);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().println(username);
+			response.getWriter().write(json);
 		}
 	}
 

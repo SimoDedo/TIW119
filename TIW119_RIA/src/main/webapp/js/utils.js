@@ -3,11 +3,12 @@ function makeCall(method, relativeUrl, form, done_callback, reset = true) {
 	//Init request
 	req.onreadystatechange = function() {
 		switch (req.readyState) {
-			case XMLHttpRequest.UNSENT:
-			case XMLHttpRequest.OPENED:
-			case XMLHttpRequest.HEADERS_RECEIVED:
-			case XMLHttpRequest.LOADING:
-			case XMLHttpRequest.DONE:
+			case XMLHttpRequest.UNSENT: break;
+			case XMLHttpRequest.OPENED: break;
+			case XMLHttpRequest.HEADERS_RECEIVED: break;
+			case XMLHttpRequest.LOADING: break;
+			case XMLHttpRequest.DONE: 
+				 console.log(req.responseURL);
 				if (checkRedirect(relativeUrl, req.responseURL)) { //Redirect if needed
 					done_callback(req);
 				}
@@ -19,10 +20,7 @@ function makeCall(method, relativeUrl, form, done_callback, reset = true) {
 	req.open(method, relativeUrl, true);
 	//Send request
 	if (form == null) {
-		req.send(); //Send empty if no form provided
-		
-		document.getElementById("login_button").value = form.getParameters("username");
-				
+		req.send(); //Send empty if no form provided				
 	} else if (form instanceof FormData) {
 		req.send(form); //Send already serialized form
 	} else {
