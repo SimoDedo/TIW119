@@ -27,7 +27,7 @@
 
 	}, false);
 
-	//attack login function
+	//attach login function
 	login_button.addEventListener("click", (e) => {
 
 		login_error.style.display = "none";
@@ -40,7 +40,22 @@
 			form.reportValidity();
 		}
 
-	}, false);
+	}, true);
+
+	//attach signup function
+	signup_button.addEventListener("click", (e) => {
+
+		signup_error.style.display = "none";
+
+		var form = e.target.closest("form");
+
+		if (form.checkValidity()) {
+			sendToServer("CheckSignup", form, signup_error);
+		} else {
+			form.reportValidity();
+		}
+
+	}, true);
 
 	function sendToServer(request_url, form, error_div) {
 		makeCall("POST", request_url, form, function(request) {

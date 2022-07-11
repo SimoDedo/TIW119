@@ -7,6 +7,45 @@
     text-align: center;
 }
 
+/* Top Bar */
+.top-bar {
+    list-style-type:none;
+    margin: -10px -10px;
+    padding: 10px 10px 10px 10px;
+    padding-bottom: 7px;
+    padding-top: 7px;
+    background-color: #1bb9c431;
+    box-shadow: 0px 0px 3px 3px rgba(0, 49, 53, 0.274);
+    position: -webkit-sticky;
+    position: sticky;
+    height: 60px;
+    top: 0;
+  }
+  
+  .back {
+    float: left;
+  }
+
+  .logout {
+    float: right;
+  }
+
+  .top-bar li a {
+    display: block;
+    color: black;
+    background-color: #54d3c298;
+    border-radius: 10px;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  /* Change the link color to #111 (black) on hover */
+  .top-bar li a:hover, .submit:hover {
+    color: white;
+    background-color: rgb(0, 160, 160);
+  }
+
 .form-container{
     text-align: center;
     margin: auto;

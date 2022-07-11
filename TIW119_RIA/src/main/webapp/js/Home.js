@@ -13,6 +13,21 @@ document.getElementById("new account").addEventListener("click", function new_ac
   }, false);
 }, false);
 
+document.getElementById("request_movement").addEventListener("click", function request_movement(e) {
+
+  document.getElementById("request_movement_form").style.display = "block";
+  e.target.textContent = "Hide";
+  e.target.removeEventListener("click", request_movement);
+  e.target.addEventListener("click", function hide(e) {
+
+    document.getElementById("request_movement_form").style.display = "none";
+    e.target.textContent = "Request movement";
+    e.target.removeEventListener("click", hide);
+    e.target.addEventListener("click", request_movement, false);
+
+  }, false);
+}, false);
+
 Array.from(document.getElementsByClassName("show status")).forEach(account => {
   account.addEventListener("click", (e) => {
 
