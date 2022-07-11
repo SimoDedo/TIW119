@@ -50,7 +50,13 @@
 		var form = e.target.closest("form");
 
 		if (form.checkValidity()) {
-			sendToServer("CheckSignup", form, signup_error);
+			if (repeat_password_input.value != password_input.value){
+                signup_error.textContent = "Passwords do not match";
+                signup_error.style.display = 'block';
+            }
+			else{
+				sendToServer("CheckSignup", form, signup_error);
+			}
 		} else {
 			form.reportValidity();
 		}
@@ -61,9 +67,8 @@
 		makeCall("POST", request_url, form, function(request) {
 			switch (request.status) { //Get status code
 				case 200: //Okay
-					var data = JSON.parse(request.responseText);
-					//sessionStorage.setItem('id', data.id);
-					//sessionStorage.setItem('name', data.name);
+					var username = JSON.parse(request.responseText);
+					sessionStorage.setItem('user', username);
 					window.location.href = "Home.html";
 					break;
 				case 400: // bad request
