@@ -4,10 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.beans.UserContacts;
 
 public class UserDAO {
     private Connection con;
@@ -133,18 +132,21 @@ public class UserDAO {
         }
 	}
 
-	public List<Integer> getContacts(int ownerUserid) throws SQLException{
-		List<Integer> accounts = new ArrayList<>();
-		String query = "SELECT contactUserid FROM tiw119.account  WHERE userid = ?";
+	public UserContacts getContacts(int ownerUserid) throws SQLException{
+		String query = "SELECT con.contactUserid, acc.id "
+						+ "FROM tiw119.contact AS con JOIN tiw119.account AS acc ON con.contactUserid = acc.userid "  
+						+ "WHERE con.ownerUserid = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, ownerUserid);
 			try (ResultSet result = pstatement.executeQuery();) {
-					while(result.next()){
-						accounts.add(result.getInt("contactUserid"));
-					}
+				UserContacts userContacts = new UserContacts();
+				userContacts.setContactsOwner(ownerUserid);
+				while(result.next()){
+					userContacts.addContact(result.getInt("contactUserid"), result.getInt("id"));
 				}
+				return userContacts;
 			}
-		return accounts;
+		}
 	}
 
 	public void addContact(int ownerUserid, int contactUserid) throws SQLException{

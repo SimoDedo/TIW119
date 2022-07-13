@@ -3,9 +3,6 @@ package it.polimi.tiw.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -19,9 +16,8 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.AccountDAO;
+import it.polimi.tiw.beans.UserContacts;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.utils.ServletError;
@@ -54,7 +50,7 @@ public class GetContactsData extends HttpServlet {
 		User user = (User) session.getAttribute("user");
 
 		UserDAO userDAO = new UserDAO(connection);
-		List<Integer> contactIDs = new ArrayList<>();
+		UserContacts contactIDs = new UserContacts();
 		try { //Retrieves the contact ids
 			contactIDs = userDAO.getContacts(user.getID());
 		} catch (SQLException e) {
@@ -62,26 +58,9 @@ public class GetContactsData extends HttpServlet {
 			response.getWriter().println(ServletError.IE_RETRIEVE_CONTACT.toString());
 			return;
 		}
-
-		//Map that contains contactUserid as key, and a list of their accountid as value to be sent to the client
-		HashMap<Integer, List<Integer>> contactsMap = new HashMap<>(); 
-		
-		AccountDAO accountDAO = new AccountDAO(connection);
-		List<Account> accountids = new ArrayList<>();
-
-		for (Integer contactUserid : contactIDs) {
-			try { //Retrives the accounts of each contact
-				accountids = accountDAO.getAccountsByUser(contactUserid);
-				contactsMap.put(contactUserid, accountids.stream().map(a -> a.getID()).toList());
-			} catch (SQLException e) {
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				response.getWriter().println(ServletError.IE_RETRIEVE_ACC.toString());
-				return;
-			}
-		}
 		
 		Gson gson = new GsonBuilder().create();
-		String json = gson.toJson(contactsMap);
+		String json = gson.toJson(contactIDs.getContacts());
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
