@@ -1,190 +1,227 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
-    <title>TIW 119 - Home page</title>
-    <link rel="stylesheet" type="text/css" href="css/Global.css">
-	<link rel="stylesheet" type="text/css" href="css/Home.css">
-	<script src="js/Home.js" charset="utf-8" defer></script>
-	
+<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1">
+<title>TIW 119 - Home page</title>
+<link rel="stylesheet" type="text/css" href="css/Global.css">
+<link rel="stylesheet" type="text/css" href="css/Home.css">
+<script src="js/Home.js" charset="utf-8" defer></script>
+
 </head>
 <body>
 
-  <ul class="top-bar">
-    <li class="back" ><a id="back">Back</a></li>
-    <li class="logout"><a id="logout">Logout</a></li>
-  </ul>
+	<ul class="top-bar">
+		<li class="back"><a id="back">Back</a></li>
+		<li class="logout"><a id="logout">Logout</a></li>
+	</ul>
 
 	<div id="home view">
-      <h1>Home Page</h1>
-      <h3>Welcome back impiegato N07H34119D46FQ2M90</h3>
+		<h1>Home Page</h1>
+		<h3 id="welcome_message">Welcome back impiegato N07H34119D46FQ2M90</h3>
 
-      <div class="table-container">
-        <table id="account_table" class="account-table">
-          <thead>
-            <tr>
-              <th>Account ID</th>
-              <th>Account Name</th>
-              <th>Account Balance</th>
-              <th>Account status</th>
-            </tr>
-          </thead>
+		<div class="table-container">
+			<table id="account_table" class="account-table">
+				<thead>
+					<tr>
+						<th>Account ID</th>
+						<th>Account Name</th>
+						<th>Account Balance</th>
+						<th>Account status</th>
+					</tr>
+				</thead>
 
-          <tbody id="account_table_body">
-            <td>placeholder ID</td>
-            <td>placeholder Name</td>
-            <td>placeholder Balance</td>
-            <td> <a class="show status" href="#">placeholder Status</a></td>
-          </tbody>
-        </table>
+				<tbody id="account_table_body">
+					<tr>
+						<td>placeholder ID</td>
+						<td>placeholder Name</td>
+						<td>placeholder Balance</td>
+						<td><a href="#">placeholder Status</a></td>
+					</tr>
+				</tbody>
+			</table>
 
-      </div>
+		</div>
 
-      <a href="#" id="new account">Create new account</a> <br><br>
-      <div id="new account form" class="form-container" hidden="true">
-        <form action="#">
-          <label for="Account Name">Account Name</label>
-          <input id="new account name" type="text" required> <br><br>
-          <label for="Balance">Balance</label>
-          <input id="new account balance" type="number" min="0" step="0.01" required>
-          <input type="submit" id="create new account" value="Create new account">
-        </form>
-      </div>
-  </div>
+		<a href="#" id="new account">Create new account</a> <br>
+		<br>
+		<div id="new account form" class="form-container" hidden="true">
+			<form action="#">
+				<label for="Account Name">Account Name</label> <input
+					id="new account name" type="text" required> <br>
+				<br> <label for="Balance">Balance</label> <input
+					id="new account balance" type="number" min="0" step="0.01" required>
+				<input type="submit" id="create new account"
+					value="Create new account"> <br>
+					<br>
+					<div id="create_new_account_error" class="error"></div>
+			</form>
+		</div>
+	</div>
 
-  <div id="status view" hidden="true">
-    <h1>Account details</h1>
-      <div id="account_info" class="table-container-account">
-        <table id="info_table" class="table">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>User</th>
-              <th>Account ID</th>
-              <th>Account name</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
+	<div id="status view">
+		<h1>Account details</h1>
+		<div id="account_info" class="table-container-account">
+			<table id="info_table" class="table">
+				<thead>
+					<tr>
+						<th>User ID</th>
+						<th>User</th>
+						<th>Account ID</th>
+						<th>Account name</th>
+						<th>Balance</th>
+					</tr>
+				</thead>
 
-          <tbody id="info_table_body">
-            <tr>
-              <td>placeholder user ID</td>
-              <td>placeholder user</td>
-              <td>placeholder account ID</td>
-              <td>placeholder account name</td>
-              <td>placeholder balance</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+				<tbody id="info_table_body">
+					<tr>
+						<td>placeholder user ID</td>
+						<td>placeholder user</td>
+						<td>placeholder account ID</td>
+						<td>placeholder account name</td>
+						<td>placeholder balance</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-      <br>
+		<br>
 
-      <div id="incoming_movements">
-        <h4>Incoming movements: these are the instances where you received money</h4>
-        <div id="in_mov_table" class="table-container-movement">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Motive</th>
-                <th>Sender Account ID</th>
-              </tr>
-            </thead>
-            <tbody id="in_mov_table_body">
-              <tr>
-                <td> placeholder date</td>
-                <td> placeholder amount</td>
-                <td> placeholder motive</td>
-                <td> placeholder account id</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+		<div id="incoming_movements">
+			<h4>Incoming movements: these are the instances where you
+				received money</h4>
+			<div id="in_mov_table" class="table-container-movement">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Amount</th>
+							<th>Motive</th>
+							<th>Sender Account ID</th>
+						</tr>
+					</thead>
+					<tbody id="in_mov_table_body">
+						<tr>
+							<td>placeholder date</td>
+							<td>placeholder amount</td>
+							<td>placeholder motive</td>
+							<td>placeholder account id</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-      <div id="outgoing_movements">
-        <h4>Outgoing movements: these are the instances where you gave money</h4>
-        <div class="table-container-movement">
-          <table id="out_mov_table" class="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Motive</th>
-                <th>Recipient Account ID</th>
-              </tr>
-            </thead>
-            <tbody id="out_mov_table_body">
-              <tr>
-                <td> placeholder date</td>
-                <td> placeholder amount</td>
-                <td> placeholder motive</td>
-                <td> placeholder account id</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+		<div id="outgoing_movements">
+			<h4>Outgoing movements: these are the instances where you gave
+				money</h4>
+			<div class="table-container-movement">
+				<table id="out_mov_table" class="table">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Amount</th>
+							<th>Motive</th>
+							<th>Recipient Account ID</th>
+						</tr>
+					</thead>
+					<tbody id="out_mov_table_body">
+						<tr>
+							<td>placeholder date</td>
+							<td>placeholder amount</td>
+							<td>placeholder motive</td>
+							<td>placeholder account id</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-      <a href="#" id="request_movement">Request movement</a> <br><br>
-      <div id="request_movement_form" class="form-container" hidden="true">
-        <p>Select an account to send them some money!</Select></p>		
-	      <form action="#">
-            <label>User ID</label> 
-            <input type="number" name="inuserid" required> <br>
-            <label>Account ID</label> 
-            <input type="number" name="inaccountid" required> <br>
-            <label>Amount</label> 
-            <input type="number" name="amount" required min="0.01" step="0.01"><br>
-            <label>Motive</label> 
-            <input type="text" name="motive" required><br>
-            <input type="hidden" name="outaccountid" required th:value="${account.ID}">
-            <input class="submit" type="submit" value="Request Movement"></fieldset>
-	    </form>
-    </div>
+		<a href="#" id="request_movement">Request movement</a> <br>
+		<br>
+		<div id="request_movement_form" class="form-container">
+			<p>
+				Select an account to send them some money!
+			</p>
+			<form action="#">
+				<label>User ID</label> <input type="number" name="inuserid" required>
+				<br> <label>Account ID</label> <input type="number"
+					name="inaccountid" required> <br> <label>Amount</label>
+				<input type="number" name="amount" required min="0.01" step="0.01"><br>
+				<label>Motive</label> <input type="text" name="motive" required><br>
+				<input type="hidden" name="outaccountid" required> <input class="submit"
+					type="submit" value="Request Movement">
+			</form>
+		</div>
 
-  </div>
+	</div>
 
-  <div id="result view" hidden="true">
+	<div id="result view">
 
-    <div id="result_success" hidden="true">
-      <h1>The movement from <span id="out_account_id"></span> to <span id="in_account_id"></span> was succesful!</h1>
-      Date of the movement: <span id="movement_date">placeholder date</span><br>
-      <h1>Your Account (<span id="out_account_id">1</span>)</h1>
-      <div class="table-container">
-          <table class="success-table" >
-              <tbody>
-                  <tr><td> Old balance</td><td id="out_account_old_balance">1000</td></tr>
-                  <tr><td> Amount removed</td><td id="movement_amount">100</td></tr>
-                  <tr><td> New balance</td><td id="out_account_new_balance">900</td></tr>
-              </tbody>
-          </table>
-      </div>
-      <h1>Destination Account (<span id="in_account_id">2</span>)</h1>
-      <div class="table-container">
-          <table class="success-table" >
-              <tbody>
-                  <tr><td> Old balance</td><td id="in_account_old_balance">1000</td></tr>
-                  <tr><td> Amount added</td><td id="movement_amount">100</td></tr>
-                  <tr><td> New balance</td><td id="in_account_new_balance">900</td></tr>
-              </tbody>
-          </table>
-      </div>
-      <div id="add_contact_div">
-        <p>Do you want to add <span id="in_account_user"> to your contacts?</p>
-        <a href="#" id="add_contact_button">placeholder add contact</a>
-        <a href="#" id="refuse_contact_button">placeholder refuse contact</a>
-      </div>
-    </div>
+		<div id="result_success">
+			<h1>
+				The movement from <span id="out_account_id"></span> to <span
+					id="in_account_id"></span> was successful!
+			</h1>
+			Date of the movement: <span id="movement_date">placeholder
+				date</span><br>
+			<h1>
+				Your Account (<span id="out_account_id">1</span>)
+			</h1>
+			<div class="table-container">
+				<table class="success-table">
+					<tbody>
+						<tr>
+							<td>Old balance</td>
+							<td id="out_account_old_balance">1000</td>
+						</tr>
+						<tr>
+							<td>Amount removed</td>
+							<td id="movement_amount">100</td>
+						</tr>
+						<tr>
+							<td>New balance</td>
+							<td id="out_account_new_balance">900</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<h1>
+				Destination Account (<span id="in_account_id">2</span>)
+			</h1>
+			<div class="table-container">
+				<table class="success-table">
+					<tbody>
+						<tr>
+							<td>Old balance</td>
+							<td id="in_account_old_balance">1000</td>
+						</tr>
+						<tr>
+							<td>Amount added</td>
+							<td id="movement_amount">100</td>
+						</tr>
+						<tr>
+							<td>New balance</td>
+							<td id="in_account_new_balance">900</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="add_contact_div">
+				<p>
+					Do you want to add <span id="in_account_user"></span> to your
+						contacts?
+				</p>
+				<a href="#" id="add_contact_button">placeholder add contact</a> <a
+					href="#" id="refuse_contact_button">placeholder refuse contact</a>
+			</div>
+		</div>
 
-    <div id="result failure" hidden="true">
-      <h1>Something went wrong!!</h1>
-      <div id="movement_error" class="error">placeholder error</div>
-    </div>
-  </div>
-	
+		<div id="result failure" hidden="true">
+			<h1>Something went wrong!!</h1>
+			<div id="movement_error" class="error">placeholder error</div>
+		</div>
+	</div>
+
 
 </body>
 </html>

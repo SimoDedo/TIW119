@@ -40,7 +40,7 @@
 			form.reportValidity();
 		}
 
-	}, true);
+	}, false);
 
 	//attach signup function
 	signup_button.addEventListener("click", (e) => {
@@ -61,7 +61,7 @@
 			form.reportValidity();
 		}
 
-	}, true);
+	}, false);
 
 	function sendToServer(request_url, form, error_div) {
 		makeCall("POST", request_url, form, function(request) {

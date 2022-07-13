@@ -36,7 +36,7 @@ function makeCall(method, relativeUrl, form, done_callback, reset = true) {
 
 function checkRedirect(requestURL, responseURL) {
 	if (responseURL !== null) {
-		let actualRequestURL = relPathToAbs(requestURL);
+		let actualRequestURL = absolutePathFromRelative(requestURL);
 		if (actualRequestURL != responseURL) { //Url changed
 			window.location.assign(responseURL); //Navigate to the url
 			return false;
@@ -48,7 +48,7 @@ function checkRedirect(requestURL, responseURL) {
 	return false;
 }
 
-function relPathToAbs(relative) {
+function absolutePathFromRelative(relative) {
 	var stack = window.location.href.split("/"),
 		parts = relative.split("/");
 	stack.pop(); // remove current file name (or empty string)
