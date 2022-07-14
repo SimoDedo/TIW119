@@ -65,19 +65,19 @@
 
 	function sendToServer(request_url, form, error_div) {
 		makeCall("POST", request_url, form, function(request) {
-			switch (request.status) { //Get status code
-				case 200: //Okay
+			switch (request.status) { //get status code
+				case 200: //ok
 					var username = JSON.parse(request.responseText);
 					sessionStorage.setItem('user', username);
 					window.location.href = "Home.html";
 					break;
-				case 400: // bad request
-				case 401: // unauthorized
-				case 500: // server error
+				case 400: //bad request
+				case 401: //unauthorized
+				case 500: //server error
 					error_div.textContent = request.responseText;
 					error_div.style.display = 'block';
 					break;
-				default: //Error
+				default: //error
 					error_div.textContent = "Request reported status " + request.status;
 					error_div.style.display = 'block';
 			}
