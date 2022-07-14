@@ -67,8 +67,8 @@
 		makeCall("POST", request_url, form, function(request) {
 			switch (request.status) { //get status code
 				case 200: //ok
-					var username = JSON.parse(request.responseText);
-					sessionStorage.setItem('user', username);
+					var user = JSON.parse(request.responseText);
+					sessionStorage.setItem('user', user);
 					window.location.href = "Home.html";
 					break;
 				case 400: //bad request

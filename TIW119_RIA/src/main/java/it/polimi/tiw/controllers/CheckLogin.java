@@ -77,7 +77,7 @@ public class CheckLogin extends HttpServlet {
 		}
 		else{
 			Gson gson = new GsonBuilder().create();
-			String json = gson.toJson(username);
+			String json = gson.toJson(user);
 			
 			request.getSession().setAttribute("user", user);
 			response.setStatus(HttpServletResponse.SC_OK);

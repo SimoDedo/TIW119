@@ -44,7 +44,7 @@
 		</div>
 		
 		<div id="accounts_error" class="error"></div>
-		<div id="no_accounts">You have no accounts! Create one with the form below</div>
+		<div id="no_accounts" class="on-empty">You have no accounts! Create one with the form below</div>
 
 		<a href="#" id="create_new_account">Create new account</a> <br>
 		<br>
@@ -54,7 +54,7 @@
 					name="name" type="text" required> <br>
 				<br> <label for="Balance">Balance</label> <input
 					name="balance" type="number" min="0" step="0.01" required>
-				<input type="button" name="create new account"
+				<input id="submit_create_new_account" type="button" name="create new account"
 					value="Create new account"> <br>
 					<br>
 					<div id="create_new_account_error" class="error"></div>
@@ -64,7 +64,7 @@
 
 	<div id="status view">
 		<h1>Account details</h1>
-		<div id="info_table" id="account_info" class="table-container-account">
+		<div class="table-container-account">
 			<table class="table">
 				<thead>
 					<tr>
@@ -90,10 +90,11 @@
 
 		<br>
 
+		<div id="movements_error" class="error"></div>
 		<div id="incoming_movements">
 			<h4>Incoming movements: these are the instances where you
 				received money</h4>
-			<div id="in_mov_table" class="table-container-movement">
+			<div class="table-container-movement">
 				<table class="table">
 					<thead>
 						<tr>
@@ -113,13 +114,14 @@
 					</tbody>
 				</table>
 			</div>
+			<div id="no_incoming_movements" class="on-empty">No incoming movements</div>
 		</div>
 
 		<div id="outgoing_movements">
 			<h4>Outgoing movements: these are the instances where you gave
 				money</h4>
 			<div class="table-container-movement">
-				<table id="out_mov_table" class="table">
+				<table class="table">
 					<thead>
 						<tr>
 							<th>Date</th>
@@ -138,6 +140,7 @@
 					</tbody>
 				</table>
 			</div>
+			<div id="no_outgoing_movements" class="on-empty">No outgoing movements</div>
 		</div>
 
 		<a href="#" id="request_movement">Request movement</a> <br>
@@ -152,8 +155,9 @@
 					name="inaccountid" required> <br> <label>Amount</label>
 				<input type="number" name="amount" required min="0.01" step="0.01"><br>
 				<label>Motive</label> <input type="text" name="motive" required><br>
-				<input type="hidden" name="outaccountid" required> <input class="submit"
-					type="submit" value="Request Movement">
+				<input type="hidden" name="outaccountid" required> <input id="request_movement_submit" class="submit"
+					type="button" name="submit" value="Request Movement">
+					<div id="request_movement_error" class="error"></div>
 			</form>
 		</div>
 

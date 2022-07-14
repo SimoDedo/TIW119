@@ -120,7 +120,7 @@ public class CheckSignup extends HttpServlet {
 		}
 
 		Gson gson = new GsonBuilder().create();
-		String json = gson.toJson(username);
+		String json = gson.toJson(toLog);
 		
 		request.getSession().setAttribute("user", toLog);
 		response.setStatus(HttpServletResponse.SC_OK);
