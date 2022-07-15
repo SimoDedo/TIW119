@@ -60,7 +60,7 @@ public enum ServletError {
 		try{
 			id = Integer.parseInt(idString);
 		}
-		catch(NumberFormatException | NullPointerException e){ //Checks that errorid parameter is actually an integer 
+		catch(NumberFormatException e){ //Checks that errorid parameter is actually an integer 
 			return null;
 		}
 		if(id<0 || id >= ServletError.values().length) //Checks that errorid parameter is valid

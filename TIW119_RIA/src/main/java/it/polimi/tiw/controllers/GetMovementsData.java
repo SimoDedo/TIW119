@@ -53,18 +53,19 @@ public class GetMovementsData extends HttpServlet {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
 
+		String accountidString = request.getParameter("accountid");
+		if(accountidString == null || accountidString.isEmpty()){ //Checks that the accountid parameter is not null or empty
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_REQUEST_DATA.toString());
+			return;
+		}
+
 		Integer accountid = null;
 		try {
-			accountid = Integer.valueOf(request.getParameter("accountid"));	
-		} catch (NumberFormatException | NullPointerException e) { //Checks that the accountid parameter is not null and actually a number
-			if(e instanceof NullPointerException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.MISSING_REQUEST_DATA.toString());
-			}
-			if(e instanceof NumberFormatException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.ACC_ID_FORMAT.toString());
-			}
+			accountid = Integer.valueOf(accountidString);	
+		} catch (NumberFormatException e) { //Checks that the accountid parameter is not null and actually a number
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.ACC_ID_FORMAT.toString());
 			return;
 		}
 		

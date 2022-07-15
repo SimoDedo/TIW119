@@ -56,18 +56,19 @@ public class AddContact extends HttpServlet {
 		HttpSession session = request.getSession();
 		User ownerUser = (User) session.getAttribute("user");
 
+		String contactUserIDString = request.getParameter("accountid");
+		if(contactUserIDString == null || contactUserIDString.isEmpty()){ //Checks that the contact user id parameter is not null or empty
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
+			return;
+		}
+
 		int contactUserID;
-		try{ //Checks that post parameters (contact user id) is present and well formatted
-			contactUserID = Integer.valueOf(request.getParameter("contactUserid"));
-		}catch(NumberFormatException | NullPointerException e){ 
-			if(e instanceof NullPointerException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
-			}
-			if(e instanceof NumberFormatException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
-			}
+		try{ //Checks that post parameters (contact user id) is actually a number
+			contactUserID = Integer.valueOf(contactUserIDString);
+		}catch(NumberFormatException e){ 
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
 			return;
 		}
 

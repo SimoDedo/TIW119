@@ -62,11 +62,16 @@ public class RequestMovement extends HttpServlet {
 		HttpSession session = request.getSession();
 		User outUser = (User) session.getAttribute("user");
 
-		
+		String outAccountIDString = request.getParameter("outaccountid");
 		String motive = request.getParameter("motive");
+		String inUserIDString = request.getParameter("inuserid");
+		String inAccountIDString = request.getParameter("inaccountid");
+		String amountString = request.getParameter("amount");
 		
 		//Checks that POST parameters aren't empty
-		if(motive == null || motive.isEmpty()){
+		if(outAccountIDString == null || outAccountIDString.isEmpty() || motive == null || motive.isEmpty() 
+			|| inUserIDString == null || inUserIDString.isEmpty() || inAccountIDString == null || inAccountIDString.isEmpty() 
+			|| amountString == null || amountString.isEmpty()){
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
 			return;
@@ -77,19 +82,13 @@ public class RequestMovement extends HttpServlet {
 		int inAccountID;
 		Double amount = null;
 		try{ 
-			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
-			inUserID = Integer.valueOf(request.getParameter("inuserid"));
-			inAccountID = Integer.valueOf(request.getParameter("inaccountid"));
-			amount = Double.valueOf(request.getParameter("amount"));
-		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually numbers
-			if(e instanceof NullPointerException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.MISSING_FORM_DATA.toString());
-			}
-			if(e instanceof NumberFormatException){
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
-			}
+			outAccountID = Integer.valueOf(outAccountIDString);
+			inUserID = Integer.valueOf(inUserIDString);
+			inAccountID = Integer.valueOf(inAccountIDString);
+			amount = Double.valueOf(amountString);
+		}catch(NumberFormatException e){ //Checks that the given numbers are actually numbers
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(ServletError.NUMBER_FORMAT.toString());
 			return;
 		}
 		if( amount <= 0){ //Checks that the given amount is positive
