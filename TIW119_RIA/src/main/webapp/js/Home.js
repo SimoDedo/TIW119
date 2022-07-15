@@ -48,7 +48,29 @@
 				document.getElementById("request_movement_error")
 			);
 			
-			//resultView = new ResultView(/*TODO*/);
+			resultView = new ResultView(
+				document.getElementById("result view"),
+				document.getElementById("result_success"),
+				document.getElementById("out_account_id"),
+				document.getElementById("in_account_id"),
+				document.getElementById("movement_date"),
+				document.getElementById("out_account_id_repeat"),
+				document.getElementById("out_account_id_old_balance"),
+				document.getElementById("movement_amount"),
+				document.getElementById("out_account_new_balance"),
+				document.getElementById("movement_amount"),
+				document.getElementById("out_account_new_balance"),
+				document.getElementById("in_account_id_repeat"),
+				document.getElementById("in_account_old_balance"),
+				document.getElementById("movement_amount_repeat"),
+				document.getElementById("in_account_new_balance"),
+				document.getElementById("add_contact_div"),
+				document.getElementById("in_account_user"),
+				document.getElementById("add_contact_button"),
+				document.getElementById("refuse_contact_button"),
+				document.getElementById("result_failure"),
+				document.getElementById("movement_error")
+			);
 						
 		}
 		
@@ -62,13 +84,13 @@
 					topBar.hideBack(); //'back' is the same as 'logout' in home. Keeping only 'logout' because it's more specific
 					homeView.show();
 					statusView.hide();
-					//resultView.hide();
+					resultView.hide();
 					break;
 				case "status":
 					topBar.showBack("home");
 					homeView.hide();
 					statusView.show();
-					//resultView.hide();
+					resultView.hide();
 					break;
 				case "result":
 					topBar.showBack("status");
@@ -143,7 +165,7 @@
 		this.show = function(){
 			
 			
-			self.name.textContent = sessionStorage.getItem("user").name + " " + sessionStorage.getItem("user").surname;
+			self.name.textContent = sessionStorage.getItem("name") + " " + sessionStorage.getItem("surname");
 			
 			self.new_account_form.style.display = "none";
 			
@@ -273,6 +295,7 @@
 						switch(request.status){
 							
 							case 200: //ok
+							accountList = null;
 							pageOrchestrator.refresh("home");
 							break;
 						case 400: //bad request
@@ -350,11 +373,11 @@
 			let userID, user, accountID, accountName, balance;
 			
 			userID = document.createElement("td");
-			userID.textContent = sessionStorage.getItem("user").ID;
+			userID.textContent = sessionStorage.getItem("ID");
 			info_row.appendChild(userID);
 			
 			user = document.createElement("td");
-			user.textContent = sessionStorage.getItem("user").username;
+			user.textContent = sessionStorage.getItem("username");
 			info_row.appendChild(user);
 			
 			accountID = document.createElement("td");
@@ -363,7 +386,7 @@
 
 			accountName = document.createElement("td");
 			accountName.textContent = displayedAccount.name;
-			info_row.appendChild(accountID);
+			info_row.appendChild(accountName);
 			
 			balance = document.createElement("td");
 			balance.textContent = displayedAccount.balance;
@@ -382,6 +405,10 @@
 				}
 				
 				else {
+					
+					self.incoming_movements.style.display = "block";
+					self.no_incoming_movements.style.display = "none";
+					
 					self.in_mov_table_body.innerHTML = ""; //clear table body
 					
 					in_movements.forEach((movement) => {
@@ -417,6 +444,10 @@
 				}
 				
 				else {
+					
+					self.outgoing_movements.style.display = "block";
+					self.no_outgoing_movements.style.display = "none";
+
 					
 					self.out_mov_table_body.innerHTML = ""; //clear table body
 					
@@ -481,9 +512,9 @@
 				e.target.addEventListener("click", function hide_form(e){
 					
 					e.target.textContent = "Request movement";
-				self.request_movement_form.style.display = "none";
-				e.target.removeEventListener("click", hide_form);
-				e.targer.addEventListener("click", show_form, false);
+					self.request_movement_form.style.display = "none";
+					e.target.removeEventListener("click", hide_form);
+					e.target.addEventListener("click", show_form, false);
 					
 				}, false);
 				
@@ -508,6 +539,8 @@
 				
 				else if (actual_request_movement_form.checkValidity()){
 					
+					transferResult = null;
+					
 					srcAccountID.value = displayedAccount.ID;
 					
 					makeCall("POST", "RequestMovement", actual_request_movement_form, (request) => {
@@ -516,18 +549,15 @@
 							
 							case 200: //ok
 							transferResult = JSON.parse(request.responseText);
-							self.request_movement_error.style.display = "none";
 							pageOrchestrator.refresh("result");
 							break;
 							case 400: //bad request
 							case 401: //unauthorized
 							case 500: //server error
-								self.request_movement_error.textContent = request.responseText;
-								self.request_movement_error.style.display = 'block';
+								resultView.movement_error.textContent = request.responseText;
 								break;
 							default: //error
-								self.request_movement_error.textContent = "Request reported status " + request.status;
-								self.request_movement_error.style.display = 'block';
+								resultView.movement_error.textContent = "Request reported status " + request.status;
 						}
 						
 					})
@@ -542,8 +572,103 @@
 			
 			self.status_div.style.display = "none";
 			actual_request_movement_form.reset();
-			if (request_movement.textContent === "Hide") request_movement.dispatchEvent(new Event("click"));
+			if (self.request_movement.textContent === "Hide") self.request_movement.dispatchEvent(new Event("click"));
 		}
 	}
 
+
+	function ResultView(
+		_result_div,
+		_result_success,
+		_out_account_id,
+		_in_account_id,
+		_movement_date,
+		_out_account_id_repeat,
+		_out_account_old_balance,
+		_movement_amount,
+		_out_account_new_balance,
+		_in_account_id_repeat,
+		_in_account_old_balance,
+		_movement_amount_repeat,
+		_in_account_new_balance,
+		_add_contact_div,
+		_in_account_user,
+		_add_contact_button,
+		_refuse_contact_button,
+		_result_failure,
+		_movement_error
+	){
+		
+		this.result_div = _result_div;
+		this.result_success = _result_success;
+		this.out_account_id = _out_account_id;
+		this.in_account_id =_in_account_id;
+		this.movement_date = _movement_date;
+		this.out_account_id_repeat = _out_account_id_repeat;
+		this.out_account_old_balance = _out_account_old_balance;
+		this.movement_amount = _movement_amount;
+		this.out_account_new_balance = _out_account_new_balance;
+		this.in_account_id_repeat = _in_account_id_repeat;
+		this.in_account_old_balance = _in_account_old_balance;
+		this.movement_amount_repeat = _movement_amount_repeat;
+		this.in_account_new_balance = _in_account_new_balance;
+		this.add_contact_div = _add_contact_div;
+		this.in_account_user = _in_account_user;
+		this.add_contact_button = _add_contact_button;
+		this.refuse_contact_button = _refuse_contact_button;
+		this.result_failure = _result_failure;
+		this.movement_error = _movement_error;
+		
+		var self = this;
+		
+		this.show = function(){
+			
+			if (transferResult === null){ //failure
+				
+				self.result_success.style.display = "none";
+				self.result_failure.style.display = "block";
+				self.movement_error.style.display = "block";
+			}
+			
+			else{
+				self.result_failure.style.display = "none";
+				
+				var movement, outAccount, inAccount;
+				
+				movement = transferResult["movement"];
+				outAccount = transferResult["outAccount"];
+				inAccount = transferResult["inAccount"];
+				
+				self.out_account_id.textContent = outAccount.ID;
+				self.out_account_id_repeat.textContent = self.out_account_id.textContent;
+				
+				self.in_account_id.textContent = inAccount.ID.textContent;
+				self.in_account_id_repeat.textContent = self.in_account_id.textContent;
+				
+				self.movement_date.textContent = movement.date;
+				
+				self.out_account_old_balance.textContent = outAccount.balance;
+				
+				self.movement_amount.textContent = movement.amount;
+				self.movement_amount_repeat.textContent = self.movement_amount.textContent;
+				
+				self.out_account_new_balance.textContent = outAccount.balance + movement.amount;
+				
+				self.in_account_old_balance.textContent = inAccount.balance;
+				
+				self.in_account_new_balance.textContent = inAccount.balance + movement.amount; 
+				
+				//TODO address book
+				
+				self.result_success.style.display = "block";
+			}
+		}
+		
+		this.hide = function(){
+			
+			self.result_div.style.display = "none";
+		}
+		
+	}
+	
 })()
