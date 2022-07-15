@@ -56,21 +56,29 @@ public class RequestMovement extends HttpServlet {
 		HttpSession session = request.getSession();
 		User outUser = (User) session.getAttribute("user");
 
-		int outAccountID;
-		try{ //Checks that the source account ID is valid. If it isn't, redirects to home. If it is, all next errors can redirect to movement failure.
-			outAccountID = Integer.valueOf(request.getParameter("outaccountid"));
-		}catch(NumberFormatException | NullPointerException e){ 
-			if(e instanceof NullPointerException)
-				toHomeWithError(request, response, ServletError.MISSING_FORM_DATA);
-			if(e instanceof NumberFormatException)
-				toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
+		//Checks that the source account ID is valid. If it isn't, redirects to home. If it is, all next errors can redirect to movement failure.
+		String outAccountIDString = request.getParameter("outaccountid");
+		if(outAccountIDString == null || outAccountIDString.isEmpty()){ //Checks that the accountid parameter is not null or empty
+			toHomeWithError(request, response, ServletError.MISSING_FORM_DATA);
 			return;
 		}
 
-		String motive = request.getParameter("motive");
+		int outAccountID;
+		try{ //Checks that the accountid parameter is actually a number
+			outAccountID = Integer.valueOf(outAccountIDString);
+		}catch(NumberFormatException e){ 
+			toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
+			return;
+		}
 
 		//Checks that POST parameters aren't empty
-		if(motive == null || motive.isEmpty()){ 
+		String motive = request.getParameter("motive");
+		String inUserIDString = request.getParameter("inuserid");
+		String inAccountIDString = request.getParameter("inaccountid");
+		String amountString = request.getParameter("amount");
+
+		if(motive == null || motive.isEmpty() || inUserIDString == null || inUserIDString.isEmpty()
+			|| inAccountIDString == null || inAccountIDString.isEmpty() || amountString == null || amountString.isEmpty()){ 
 			toMovementFailure(request, response, ServletError.MISSING_FORM_DATA, outAccountID);
 			return;
 		}
@@ -79,21 +87,18 @@ public class RequestMovement extends HttpServlet {
 		int inAccountID;
 		Double amount = null;
 		try{ 
-			inUserID = Integer.valueOf(request.getParameter("inuserid"));
-			inAccountID = Integer.valueOf(request.getParameter("inaccountid"));
-			amount = Double.valueOf(request.getParameter("amount"));
-		}catch(NumberFormatException | NullPointerException e){ //Checks that the given numbers are actually a number
-			if(e instanceof NullPointerException)
-				toMovementFailure(request, response, ServletError.MISSING_FORM_DATA, outAccountID);
-			if(e instanceof NumberFormatException)
-				toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
+			inUserID = Integer.valueOf(inUserIDString);
+			inAccountID = Integer.valueOf(inAccountIDString);
+			amount = Double.valueOf(amountString);
+		}catch(NumberFormatException e){ //Checks that the given numbers are actually a number
+			toMovementFailure(request, response, ServletError.NUMBER_FORMAT, outAccountID);
 			return;
 		}
 		if( amount <= 0){ //Checks that the given amount is positive
 			toMovementFailure(request, response, ServletError.NEGATIVE_OR_ZERO_AMOUNT, outAccountID);
 			return;
 		}
-		if(inAccountID == outAccountID){
+		if(inAccountID == outAccountID){ //Checks that user isn't billing the same account
 			toMovementFailure(request, response, ServletError.ACC_SAME, outAccountID);
 			return;
 		}
@@ -158,7 +163,7 @@ public class RequestMovement extends HttpServlet {
 	}
 
 	private void toHomeWithError(HttpServletRequest request, HttpServletResponse response, ServletError accountErrorMsg) throws IOException{
-		String path = getServletContext().getContextPath() + "/Home?accErrorid=" + accountErrorMsg.ordinal();
+		String path = getServletContext().getContextPath() + "/Home?errorid=" + accountErrorMsg.ordinal();
 		response.sendRedirect(path);
 	}
 

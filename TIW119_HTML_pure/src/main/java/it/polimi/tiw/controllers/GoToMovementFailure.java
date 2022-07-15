@@ -58,6 +58,11 @@ public class GoToMovementFailure extends HttpServlet {
 		User user = (User) session.getAttribute("user");
 
 		String accountidString = request.getParameter("accountid");
+		if(accountidString == null || accountidString.isEmpty()){ //Checks that the accountid parameter is not null or empty
+			toHomeWithError(request, response, ServletError.MISSING_REQUEST_DATA);
+			return;
+		}
+
 		Integer accountid = null;
 		try {
             accountid = Integer.valueOf(accountidString);	
@@ -86,7 +91,7 @@ public class GoToMovementFailure extends HttpServlet {
         
         Integer errorid = ServletError.getErrorID(request.getParameter("errorid"));
         if(errorid == null){
-            toHomeWithError(request, response, ServletError.ACC_ID_FORMAT);
+            toHomeWithError(request, response, ServletError.NO_ERROR);
 			return;
         }
 

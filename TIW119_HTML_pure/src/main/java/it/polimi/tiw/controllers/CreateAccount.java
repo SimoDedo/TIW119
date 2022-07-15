@@ -55,15 +55,16 @@ public class CreateAccount extends HttpServlet {
 
 
 		String accountName = request.getParameter("name");
+		String balanceString = request.getParameter("balance");
 		
-		if(accountName == null || accountName.isEmpty()){ //Checks that POST parameters aren't empty
+		if(accountName == null || accountName.isEmpty() || balanceString == null || balanceString.isEmpty() ){ //Checks that POST parameters aren't empty
 			toHomeWithError(request, response, ServletError.MISSING_FORM_DATA);
 			return;
 		}
 
 		Double balance = null;
 		try{ 
-			balance = Double.parseDouble(request.getParameter("balance"));
+			balance = Double.parseDouble(balanceString);
 		}catch(NumberFormatException | NullPointerException e){ //Checks that the given balance is actually a number
 			toHomeWithError(request, response, ServletError.NUMBER_FORMAT);
 			return;
