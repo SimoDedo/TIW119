@@ -27,7 +27,7 @@
       <url-pattern>/Home.html</url-pattern>
       <url-pattern>/GetAccountsData</url-pattern>
       <url-pattern>/CreateAccount</url-pattern>
-      <url-pattern>/GetMovementData</url-pattern>
+      <url-pattern>/GetMovementsData</url-pattern>
       <url-pattern>/RequestMovement</url-pattern>
       <url-pattern>/GetContacts</url-pattern>
       <url-pattern>/AddContact</url-pattern>
