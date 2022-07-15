@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class AccountDAO {
             String query = "INSERT into tiw119.account (name, balance, userid) VALUES (?, ?, ?)";
             balance.setScale(2);
             con.setAutoCommit(false);
-            try (PreparedStatement pstatement = con.prepareStatement(query);) {
+            try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
                 pstatement.setString(1, name);
                 pstatement.setBigDecimal(2, balance);
                 pstatement.setInt(3, userid);
@@ -92,7 +93,7 @@ public class AccountDAO {
                 if (generatedKeys.next()) {
                     accountid =  generatedKeys.getInt(1);
                 } else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
+                    throw new SQLException("Creating account failed, no ID obtained.");
                 }
                 con.commit();
                 return accountid;
