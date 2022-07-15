@@ -64,6 +64,9 @@
 
 	<div id="status view">
 		<h1>Account details</h1>
+		
+		<div id="contacts_error" class="error"></div>
+		
 		<div class="table-container-account">
 			<table class="table">
 				<thead>
@@ -114,8 +117,9 @@
 					</tbody>
 				</table>
 			</div>
-			<div id="no_incoming_movements" class="on-empty">No incoming movements</div>
 		</div>
+		
+		<div id="no_incoming_movements" class="on-empty">No incoming movements</div>
 
 		<div id="outgoing_movements">
 			<h4>Outgoing movements: these are the instances where you gave
@@ -140,9 +144,10 @@
 					</tbody>
 				</table>
 			</div>
-			<div id="no_outgoing_movements" class="on-empty">No outgoing movements</div>
 		</div>
-
+		
+		<div id="no_outgoing_movements" class="on-empty">No outgoing movements</div>
+		
 		<a href="#" id="request_movement">Request movement</a> <br>
 		<br>
 		<div id="request_movement_form" class="form-container">
@@ -150,9 +155,11 @@
 				Select an account to send them some money!
 			</p>
 			<form action="#">
-				<label>User ID</label> <input type="number" name="inuserid" required>
+				<label>User ID</label> <input type="number" name="inuserid" list="ids_datalist" required>
+				<datalist id="ids_datalist"><option value="placeholder"></datalist>
 				<br> <label>Account ID</label> <input type="number"
-					name="inaccountid" required> <br> <label>Amount</label>
+					name="inaccountid" list="accounts_datalist" required>
+					<datalist id="accounts_datalist"><option value="placeholder"></datalist> <br> <label>Amount</label>
 				<input type="number" name="amount" required min="0.01" step="0.01"><br>
 				<label>Motive</label> <input type="text" name="motive" required><br>
 				<input type="hidden" name="outaccountid" required> <input id="request_movement_submit" class="submit"
@@ -222,9 +229,10 @@
 				<a href="#" id="add_contact_button">placeholder add contact</a> <a
 					href="#" id="refuse_contact_button">placeholder refuse contact</a>
 			</div>
+			<div id="add_contact_result"></div>
 		</div>
 
-		<div id="result failure" hidden="true">
+		<div id="result_failure" hidden="true">
 			<h1>Something went wrong!!</h1>
 			<div id="movement_error" class="error">placeholder error</div>
 		</div>

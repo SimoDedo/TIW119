@@ -62,3 +62,11 @@ function absolutePathFromRelative(relative) {
 	}
 	return stack.join("/"); //Join everything
 }
+
+Array.prototype.contains = function(element){ 
+    for(let i = 0;i<this.length;i++)
+        if (this[i] == element)
+            return true;
+    
+    return false;
+}

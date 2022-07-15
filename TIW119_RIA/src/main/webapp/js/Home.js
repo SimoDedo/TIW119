@@ -35,6 +35,7 @@
 			
 			statusView = new StatusView(
 				document.getElementById("status view"),
+				document.getElementById("contacts_error"),
 				document.getElementById("info_table_body"),
 				document.getElementById("movements_error"),
 				document.getElementById("incoming_movements"),
@@ -45,6 +46,8 @@
 				document.getElementById("no_outgoing_movements"),
 				document.getElementById("request_movement"),
 				document.getElementById("request_movement_form"),
+				document.getElementById("ids_datalist"),
+				document.getElementById("accounts_datalist"),
 				document.getElementById("request_movement_error")
 			);
 			
@@ -55,9 +58,7 @@
 				document.getElementById("in_account_id"),
 				document.getElementById("movement_date"),
 				document.getElementById("out_account_id_repeat"),
-				document.getElementById("out_account_id_old_balance"),
-				document.getElementById("movement_amount"),
-				document.getElementById("out_account_new_balance"),
+				document.getElementById("out_account_old_balance"),
 				document.getElementById("movement_amount"),
 				document.getElementById("out_account_new_balance"),
 				document.getElementById("in_account_id_repeat"),
@@ -69,7 +70,8 @@
 				document.getElementById("add_contact_button"),
 				document.getElementById("refuse_contact_button"),
 				document.getElementById("result_failure"),
-				document.getElementById("movement_error")
+				document.getElementById("movement_error"),
+				document.getElementById("add_contact_result")
 			);
 						
 		}
@@ -332,6 +334,7 @@
 	
 	function StatusView(
 		_status_div,
+		_contacts_error,
 		_info_table_body,
 		_movements_error,
 		_incoming_movements,
@@ -342,9 +345,12 @@
 		_no_outgoing_movements,
 		_request_movement,
 		_request_movement_form,
+		_ids_datalist,
+		_accounts_datalist,
 		_request_movement_error){
 			
 			this.status_div = _status_div;
+			this.contacts_error = _contacts_error;
 			this.info_table_body = _info_table_body;
 			this.movements_error = _movements_error;
 			this.incoming_movements = _incoming_movements;
@@ -355,6 +361,8 @@
 			this.no_outgoing_movements = _no_outgoing_movements;
 			this.request_movement = _request_movement;
 			this.request_movement_form = _request_movement_form;
+			this.ids_datalist = _ids_datalist;
+			this.accounts_datalist = _accounts_datalist;
 			this.request_movement_error = _request_movement_error;
 		
 		
@@ -527,13 +535,13 @@
 			
 			request_submit.addEventListener("click", () => {
 				
-				if (destUserID === sessionStorage.getItem("user").ID){
-					self.request_movement_error.textContent = "Error! Cannot transfer from self";
+				if (amount <= 0){
+					self.request_movement_error.textContent = "Error! Amount must be greater than 0";
 					self.request_movement_error.style.display = "block";
 				}
 				
-				else if (amount <= 0){
-					self.request_movement_error.textContent = "Error! Amount must be greater than 0";
+				if (amount >= displayedAccount.balance){
+					self.request_movement_error.textContent = "Error! Not enough money on account";
 					self.request_movement_error.style.display = "block";
 				}
 				
@@ -560,10 +568,112 @@
 								resultView.movement_error.textContent = "Request reported status " + request.status;
 						}
 						
-					})
+					});
 				}
 				
 			}, false);
+			
+			makeCall("GET", "GetContactsData", null, (request) => {
+				
+				switch(request.status){
+					
+					case 200: //ok
+						addressBook = JSON.parse(request.responseText);
+						self.contacts_error.style.display = "none";
+						//todo
+						break;
+					case 400: //bad request
+					case 401: //unauthorized
+					case 500: //server error
+						self.contacts_error.textContent = request.responseText;
+						self.contacts_error.style.display = "block";
+						break;
+					default: //error
+						self.contacts_error.textContent = "Request reported status " + request.status;
+						self.contacts_error.style.display = "block";
+
+				}
+				
+			});
+			
+			var setAutoIDsDatalist = function(input){
+				
+				//clear prevoius suggestions
+				self.ids_datalist.innerHTML = "";
+				self.accounts_datalist.innerHTML = "";
+				
+				if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
+				
+				var suggestions = Object.keys(addressBook);
+				
+				if(!suggestions.contains(input.value)){ //input value is already a suggestion
+					
+					let proposables = [];
+					
+					suggestions.forEach((suggestion) => {
+						if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
+					});
+					
+					proposables.forEach((proposal) => {
+						
+						let newOption = document.createElement("option");
+						newOption.value = proposal;
+						self.ids_datalist.appendChild(newOption);
+					});				
+				}
+				
+			}
+			
+			var setAutoAccountsDatalist = function(input, reference){
+				
+				//clear prevoius suggestions
+				self.ids_datalist.innerHTML = "";
+				self.accounts_datalist.innerHTML = "";
+				
+				if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
+				
+				if (reference.value === "") return; //no accounts for no user
+				
+				var suggestions = addressBook[reference.value];
+				
+				if (suggestions === undefined) return; //no available suggestions
+				
+				if(!suggestions.contains(input.value)){ //input value is already a suggestion
+					
+					let proposables = [];
+					
+					suggestions.forEach((suggestion) => {
+						suggestion = suggestion.toString();
+						if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
+					});
+					
+					proposables.forEach((proposal) => {
+						
+						let newOption = document.createElement("option");
+						newOption.value = proposal;
+						self.accounts_datalist.appendChild(newOption);
+					});	
+				}
+			}
+			
+			var userIdInput = actual_request_movement_form.querySelector("input[name='inuserid']");
+			var accountIdInput = actual_request_movement_form.querySelector("input[name='inaccountid']");
+			
+			userIdInput.addEventListener("focus", (e) => {
+				setAutoIDsDatalist(e.target);
+			})
+			
+			userIdInput.addEventListener("keyup", (e) => {
+				setAutoIDsDatalist(e.target);
+			})
+			
+			accountIdInput.addEventListener("focus", (e) => {
+				setAutoAccountsDatalist(e.target, userIdInput);
+			})
+			
+			accountIdInput.addEventListener("keyup", (e) => {
+				setAutoAccountsDatalist(e.target, userIdInput);
+			})
 			
 			self.status_div.style.display = "block";
 		}
@@ -596,7 +706,8 @@
 		_add_contact_button,
 		_refuse_contact_button,
 		_result_failure,
-		_movement_error
+		_movement_error,
+		_add_contact_result
 	){
 		
 		this.result_div = _result_div;
@@ -618,6 +729,7 @@
 		this.refuse_contact_button = _refuse_contact_button;
 		this.result_failure = _result_failure;
 		this.movement_error = _movement_error;
+		this.add_contact_result = _add_contact_result;
 		
 		var self = this;
 		
@@ -658,7 +770,54 @@
 				
 				self.in_account_new_balance.textContent = inAccount.balance + movement.amount; 
 				
-				//TODO address book
+				self.add_contact_result.style.display = "none";
+				
+				if(!Object.keys(addressBook).contains(inAccount.ownerID)){
+					
+					self.in_account_user.textContent = inAccount.ownerID;
+					
+					self.add_contact_button.textContent = "Add " +  inAccount.ownerID;
+					self.refuse_contact_button.textContent = "Don't add " + inAccount.ownerID;
+					
+					self.add_contact_button.addEventListener("click", () => {
+						
+						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, (request) => {
+							
+							switch(request.status){
+					
+								case 200: //ok
+									self.add_contact_div.style.display = "none";
+									self.add_contact_result.textContent = "Successfully added " + inAccount.ownerID + " to you contacts";
+									self.add_contact_result.style.display = "block";
+									//todo
+									break;
+								case 400: //bad request
+								case 401: //unauthorized
+								case 500: //server error
+									self.add_contact_result.textContent = request.responseText;
+									self.add_contact_result.style.display = "block";
+									break;
+								default: //error
+									self.add_contact_result.textContent = "Request reported status " + request.status;
+									self.add_contact_result.style.display = "block";
+			
+							}
+							
+						})
+						
+					}, false);
+					
+					self.refuse_contact_button.addEventListener("click", () => {
+						
+						self.add_contact_div.style.display = "none";
+						self.add_contact_result.textContent =  inAccount.ownerID + " was not added to your contacts";
+						self.add_contact_result.style.display = "block";
+					})
+					
+					self.add_contact_div.style.display = "block";
+				}
+				
+				else self.add_contact_div.style.display = "none";
 				
 				self.result_success.style.display = "block";
 			}
@@ -666,6 +825,7 @@
 		
 		this.hide = function(){
 			
+			self.add_contact_result.style.display = "none";
 			self.result_div.style.display = "none";
 		}
 		
