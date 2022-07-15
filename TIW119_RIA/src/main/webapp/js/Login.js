@@ -68,7 +68,11 @@
 			switch (request.status) { //get status code
 				case 200: //ok
 					var user = JSON.parse(request.responseText);
-					sessionStorage.setItem('user', user);
+					sessionStorage.setItem("ID", user.ID);
+					sessionStorage.setItem("email", user.email);
+					sessionStorage.setItem("username", user.username);
+					sessionStorage.setItem("name", user.name);
+					sessionStorage.setItem("surname", user.surname);
 					window.location.href = "Home.html";
 					break;
 				case 400: //bad request
