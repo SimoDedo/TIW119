@@ -246,31 +246,27 @@
 			}
 			};
 			
-			if (accountList === null){
 				
-				makeCall("GET", "GetAccountsData", null, (request) => {
+			makeCall("GET", "GetAccountsData", null, (request) => {
+				
+				switch(request.status){ //get status code
 					
-					switch(request.status){ //get status code
-						
-						case 200: //ok
-							accountList = JSON.parse(request.responseText);
-							self.accounts_error.style.display = "none";
-							showAccounts();
-							break;
-						case 400: //bad request
-						case 401: //unauthorized
-						case 500: //server error
-							self.accounts_error.textContent = request.responseText;
-							self.accounts_error.style.display = 'block';
-							break;
-						default: //error
-							self.accounts_error.textContent = "Request reported status " + request.status;
-							self.accounts_error.style.display = 'block';
-					}
-				});
-			}
-			
-			else showAccounts();
+					case 200: //ok
+						accountList = JSON.parse(request.responseText);
+						self.accounts_error.style.display = "none";
+						showAccounts();
+						break;
+					case 400: //bad request
+					case 401: //unauthorized
+					case 500: //server error
+						self.accounts_error.textContent = request.responseText;
+						self.accounts_error.style.display = 'block';
+						break;
+					default: //error
+						self.accounts_error.textContent = "Request reported status " + request.status;
+						self.accounts_error.style.display = 'block';
+				}
+			});
 			
 			
 			let new_account_name = actual_create_new_account_form.querySelector("input[name='name']");
@@ -563,6 +559,7 @@
 							case 401: //unauthorized
 							case 500: //server error
 								resultView.movement_error.textContent = request.responseText;
+								pageOrchestrator.refresh("result");
 								break;
 							default: //error
 								resultView.movement_error.textContent = "Request reported status " + request.status;
@@ -754,7 +751,7 @@
 				self.out_account_id.textContent = outAccount.ID;
 				self.out_account_id_repeat.textContent = self.out_account_id.textContent;
 				
-				self.in_account_id.textContent = inAccount.ID.textContent;
+				self.in_account_id.textContent = inAccount.ID;
 				self.in_account_id_repeat.textContent = self.in_account_id.textContent;
 				
 				self.movement_date.textContent = movement.date;
@@ -764,7 +761,7 @@
 				self.movement_amount.textContent = movement.amount;
 				self.movement_amount_repeat.textContent = self.movement_amount.textContent;
 				
-				self.out_account_new_balance.textContent = outAccount.balance + movement.amount;
+				self.out_account_new_balance.textContent = outAccount.balance - movement.amount;
 				
 				self.in_account_old_balance.textContent = inAccount.balance;
 				
@@ -781,7 +778,7 @@
 					
 					self.add_contact_button.addEventListener("click", () => {
 						
-						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, (request) => {
+						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, null,(request) => {
 							
 							switch(request.status){
 					
@@ -821,6 +818,7 @@
 				
 				self.result_success.style.display = "block";
 			}
+			self.result_div.style.display ="block"
 		}
 		
 		this.hide = function(){

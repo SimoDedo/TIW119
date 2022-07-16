@@ -8,7 +8,6 @@ function makeCall(method, relativeUrl, form, done_callback, reset = true) {
 			case XMLHttpRequest.HEADERS_RECEIVED: break;
 			case XMLHttpRequest.LOADING: break;
 			case XMLHttpRequest.DONE: 
-				 console.log(req.responseURL);
 				if (checkRedirect(relativeUrl, req.responseURL)) { //Redirect if needed
 					done_callback(req);
 				}
