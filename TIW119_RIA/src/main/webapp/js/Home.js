@@ -682,7 +682,10 @@
 			
 			self.status_div.style.display = "none";
 			actual_request_movement_form.reset();
+			actual_request_movement_form.querySelector("input[name='inuserid']").blur();
 			if (self.request_movement.textContent === "Hide") self.request_movement.dispatchEvent(new Event("click"));
+			self.accounts_datalist.innerHTML = "";
+			self.ids_datalist.innerHTML = "";
 		}
 	}
 
