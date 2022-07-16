@@ -47,14 +47,7 @@ public class RequestMovement extends HttpServlet {
 	public void init() throws UnavailableException{
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
-
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
