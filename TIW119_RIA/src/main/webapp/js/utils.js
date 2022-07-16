@@ -62,6 +62,23 @@ function absolutePathFromRelative(relative) {
 	return stack.join("/"); //Join everything
 }
 
+/**
+	makes errors hideable
+ */
+(function(){
+	
+	var errors = Array.from(document.getElementsByClassName("error"));
+	
+	errors.forEach((error) => {
+		
+		error.addEventListener("click", (e) => {
+			
+			e.target.style.display = "none";
+		}, false);
+	});
+	
+})()
+
 Array.prototype.contains = function(element){ 
     for(let i = 0;i<this.length;i++)
         if (this[i] == element)
