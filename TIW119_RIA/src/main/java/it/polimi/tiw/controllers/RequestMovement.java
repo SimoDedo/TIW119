@@ -161,6 +161,10 @@ public class RequestMovement extends HttpServlet {
 		movement.setInAccountID(inAccountID);
 		movement.setOutAccountID(outAccountID);
 
+		//Send clients the accounts with the modified balance
+		outAccount.setBalance(BigDecimal.valueOf(outAccount.getBalance().doubleValue() - amount).setScale(2));
+		inAccount.setBalance(BigDecimal.valueOf(inAccount.getBalance().doubleValue() + amount).setScale(2));
+
 		HashMap<String, Object> movementMap = new HashMap<>();
 		movementMap.put("movement", movement);
 		movementMap.put("outAccount", outAccount);

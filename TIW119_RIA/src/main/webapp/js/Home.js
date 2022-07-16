@@ -553,6 +553,7 @@
 							
 							case 200: //ok
 							transferResult = JSON.parse(request.responseText);
+							displayedAccount = transferResult["outAccount"];
 							pageOrchestrator.refresh("result");
 							break;
 							case 400: //bad request
@@ -567,6 +568,8 @@
 						
 					});
 				}
+
+				else actual_request_movement_form.reportValidity();
 				
 			}, false);
 			
@@ -756,16 +759,16 @@
 				
 				self.movement_date.textContent = movement.date;
 				
-				self.out_account_old_balance.textContent = outAccount.balance;
+				self.out_account_old_balance.textContent = outAccount.balance + movement.amount;
 				
 				self.movement_amount.textContent = movement.amount;
 				self.movement_amount_repeat.textContent = self.movement_amount.textContent;
 				
-				self.out_account_new_balance.textContent = outAccount.balance - movement.amount;
+				self.out_account_new_balance.textContent = outAccount.balance;
 				
-				self.in_account_old_balance.textContent = inAccount.balance;
+				self.in_account_old_balance.textContent = inAccount.balance - movement.amount;
 				
-				self.in_account_new_balance.textContent = inAccount.balance + movement.amount; 
+				self.in_account_new_balance.textContent = inAccount.balance; 
 				
 				self.add_contact_result.style.display = "none";
 				
@@ -778,7 +781,7 @@
 					
 					self.add_contact_button.addEventListener("click", () => {
 						
-						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, null,(request) => {
+						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, null, (request) => {
 							
 							switch(request.status){
 					
