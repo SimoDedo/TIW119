@@ -164,8 +164,50 @@
 		
 		var self = this;
 		
-		this.show = function(){
+		new_account_submit.addEventListener("click", () => {
 			
+			let new_account_name = actual_create_new_account_form.querySelector("input[name='name']");
+			if ((function(){ //check for duplicate account name
+				
+				accountList.forEach((account) => {	
+					if (account.name === new_account_name) return true;
+				})
+				return false;
+			})()) {
+				
+				self.create_new_account_error.textContent = "Error! There's already an account with the same name";
+				self.create_new_account_error.style.display = "block";
+			}
+			
+			else if (actual_create_new_account_form.checkValidity()) {
+				
+				makeCall("POST", "CreateAccount", actual_create_new_account_form, (request) => {
+					
+					switch(request.status){
+						
+						case 200: //ok
+						accountList = null;
+						pageOrchestrator.refresh("home");
+						break;
+					case 400: //bad request
+					case 401: //unauthorized
+					case 500: //server error
+						self.create_new_account_error.textContent = request.responseText;
+						self.create_new_account_error.style.display = 'block';
+						break;
+					default: //error
+						self.create_new_account_error.textContent = "Request reported status " + request.status;
+						self.create_new_account_error.style.display = 'block';
+					}
+					
+				})
+			}
+			
+			else actual_create_new_account_form.reportValidity();
+			
+		}, false)
+		
+		this.show = function(){
 			
 			self.name.textContent = sessionStorage.getItem("name") + " " + sessionStorage.getItem("surname");
 			
@@ -186,8 +228,7 @@
 				}, false);
 				
 			}, false);
-			
-			
+
 			var showAccounts = function(){
 				
 				if (accountList !== null){
@@ -267,52 +308,7 @@
 						self.accounts_error.style.display = 'block';
 				}
 			});
-			
-			
-			let new_account_name = actual_create_new_account_form.querySelector("input[name='name']");
-			
-			
-			new_account_submit.addEventListener("click", () => {
-				
-				if ((function(){ //check for duplicate account name
-					
-					accountList.forEach((account) => {	
-						if (account.name === new_account_name) return true;
-					})
-					return false;
-				})()) {
-					
-					self.create_new_account_error.textContent = "Error! There's already an account with the same name";
-					self.create_new_account_error.style.display = "block";
-				}
-				
-				else if (actual_create_new_account_form.checkValidity()) {
-					
-					makeCall("POST", "CreateAccount", actual_create_new_account_form, (request) => {
-						
-						switch(request.status){
-							
-							case 200: //ok
-							accountList = null;
-							pageOrchestrator.refresh("home");
-							break;
-						case 400: //bad request
-						case 401: //unauthorized
-						case 500: //server error
-							self.create_new_account_error.textContent = request.responseText;
-							self.create_new_account_error.style.display = 'block';
-							break;
-						default: //error
-							self.create_new_account_error.textContent = "Request reported status " + request.status;
-							self.create_new_account_error.style.display = 'block';
-						}
-						
-					})
-				}
-				
-				else actual_create_new_account_form.reportValidity();
-				
-			}, false)
+		
 			
 			this.home_div.style.display = "block";
 		}
@@ -367,6 +363,157 @@
 		var actual_request_movement_form = request_submit.closest("form");
 		
 		var self = this;
+
+		this.request_movement.addEventListener("click", function show_form(e){
+				
+			e.target.textContent = "Hide";
+			self.request_movement_form.style.display = "block";
+			e.target.removeEventListener("click", show_form);
+			e.target.addEventListener("click", function hide_form(e){
+				
+				e.target.textContent = "Request movement";
+				self.request_movement_form.style.display = "none";
+				e.target.removeEventListener("click", hide_form);
+				e.target.addEventListener("click", show_form, false);
+				
+			}, false);
+			
+		}, false);
+
+		
+		request_submit.addEventListener("click", () => {
+			let destAccountID = actual_request_movement_form.querySelector("input[name='inaccountid']");
+			let amount = actual_request_movement_form.querySelector("input[name='amount']");
+			let srcAccountID = actual_request_movement_form.querySelector("input[name='outaccountid']");
+			console.log(Number(amount.value));
+			console.log(Number(displayedAccount.balance));
+
+			if (Number(amount.value) <= 0){
+				self.request_movement_error.textContent = "Error! Amount must be greater than 0";
+				self.request_movement_error.style.display = "block";
+			}
+			
+			else if (Number(amount.value) >= Number(displayedAccount.balance)){
+				self.request_movement_error.textContent = "Error! Not enough money on account";
+				self.request_movement_error.style.display = "block";
+			}
+			
+			else if(destAccountID.value == displayedAccount.ID){
+				self.request_movement_error.textContent = "Error! Can't make movement to same account";
+				self.request_movement_error.style.display = "block";
+			}
+
+			else if (actual_request_movement_form.checkValidity()){
+				
+				transferResult = null;
+				
+				srcAccountID.value = displayedAccount.ID;
+				
+				makeCall("POST", "RequestMovement", actual_request_movement_form, (request) => {
+					
+					switch(request.status){
+						
+						case 200: //ok
+						transferResult = JSON.parse(request.responseText);
+						displayedAccount = transferResult["outAccount"];
+						pageOrchestrator.refresh("result");
+						break;
+						case 400: //bad request
+						case 401: //unauthorized
+						case 500: //server error
+							resultView.movement_error.textContent = request.responseText;
+							pageOrchestrator.refresh("result");
+							break;
+						default: //error
+							resultView.movement_error.textContent = "Request reported status " + request.status;
+					}
+					
+				});
+			}
+
+			else actual_request_movement_form.reportValidity();
+			
+		}, false);
+
+		var setAutoIDsDatalist = function(input){
+				
+			//clear prevoius suggestions
+			self.ids_datalist.innerHTML = "";
+			self.accounts_datalist.innerHTML = "";
+			
+			if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
+			
+			var suggestions = Object.keys(addressBook);
+			
+			if(!suggestions.contains(input.value)){ //input value is already a suggestion
+				
+				let proposables = [];
+				
+				suggestions.forEach((suggestion) => {
+					if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
+				});
+				
+				proposables.forEach((proposal) => {
+					
+					let newOption = document.createElement("option");
+					newOption.value = proposal;
+					self.ids_datalist.appendChild(newOption);
+				});				
+			}
+			
+		}
+		
+		var setAutoAccountsDatalist = function(input, reference){
+			
+			//clear prevoius suggestions
+			self.ids_datalist.innerHTML = "";
+			self.accounts_datalist.innerHTML = "";
+			
+			if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
+			
+			if (reference.value === "") return; //no accounts for no user
+			
+			var suggestions = addressBook[reference.value];
+			
+			if (suggestions === undefined) return; //no available suggestions
+			
+			if(!suggestions.contains(input.value)){ //input value is already a suggestion
+				
+				let proposables = [];
+				
+				suggestions.forEach((suggestion) => {
+					suggestion = suggestion.toString();
+					if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
+				});
+				
+				proposables.forEach((proposal) => {
+					
+					let newOption = document.createElement("option");
+					newOption.value = proposal;
+					self.accounts_datalist.appendChild(newOption);
+				});	
+			}
+		}
+	
+
+		var userIdInput = actual_request_movement_form.querySelector("input[name='inuserid']");
+		var accountIdInput = actual_request_movement_form.querySelector("input[name='inaccountid']");
+		
+		userIdInput.addEventListener("focus", (e) => {
+			setAutoIDsDatalist(e.target);
+		})
+		
+		userIdInput.addEventListener("keyup", (e) => {
+			setAutoIDsDatalist(e.target);
+		})
+		
+		accountIdInput.addEventListener("focus", (e) => {
+			setAutoAccountsDatalist(e.target, userIdInput);
+		})
+		
+		accountIdInput.addEventListener("keyup", (e) => {
+			setAutoAccountsDatalist(e.target, userIdInput);
+		})
 		
 		this.show = function(){
 			
@@ -508,71 +655,6 @@
 			
 			self.request_movement_form.style.display = "none";
 			
-			self.request_movement.addEventListener("click", function show_form(e){
-				
-				e.target.textContent = "Hide";
-				self.request_movement_form.style.display = "block";
-				e.target.removeEventListener("click", show_form);
-				e.target.addEventListener("click", function hide_form(e){
-					
-					e.target.textContent = "Request movement";
-					self.request_movement_form.style.display = "none";
-					e.target.removeEventListener("click", hide_form);
-					e.target.addEventListener("click", show_form, false);
-					
-				}, false);
-				
-			}, false);
-			
-			
-			let destUserID = actual_request_movement_form.querySelector("input[name='inuserid']");
-			let amount = actual_request_movement_form.querySelector("input[name='amount']");
-			let srcAccountID = actual_request_movement_form.querySelector("input[name='outaccountid']");
-			
-			request_submit.addEventListener("click", () => {
-				
-				if (amount <= 0){
-					self.request_movement_error.textContent = "Error! Amount must be greater than 0";
-					self.request_movement_error.style.display = "block";
-				}
-				
-				if (amount >= displayedAccount.balance){
-					self.request_movement_error.textContent = "Error! Not enough money on account";
-					self.request_movement_error.style.display = "block";
-				}
-				
-				else if (actual_request_movement_form.checkValidity()){
-					
-					transferResult = null;
-					
-					srcAccountID.value = displayedAccount.ID;
-					
-					makeCall("POST", "RequestMovement", actual_request_movement_form, (request) => {
-						
-						switch(request.status){
-							
-							case 200: //ok
-							transferResult = JSON.parse(request.responseText);
-							displayedAccount = transferResult["outAccount"];
-							pageOrchestrator.refresh("result");
-							break;
-							case 400: //bad request
-							case 401: //unauthorized
-							case 500: //server error
-								resultView.movement_error.textContent = request.responseText;
-								pageOrchestrator.refresh("result");
-								break;
-							default: //error
-								resultView.movement_error.textContent = "Request reported status " + request.status;
-						}
-						
-					});
-				}
-
-				else actual_request_movement_form.reportValidity();
-				
-			}, false);
-			
 			makeCall("GET", "GetContactsData", null, (request) => {
 				
 				switch(request.status){
@@ -595,85 +677,6 @@
 				}
 				
 			});
-			
-			var setAutoIDsDatalist = function(input){
-				
-				//clear prevoius suggestions
-				self.ids_datalist.innerHTML = "";
-				self.accounts_datalist.innerHTML = "";
-				
-				if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
-				
-				var suggestions = Object.keys(addressBook);
-				
-				if(!suggestions.contains(input.value)){ //input value is already a suggestion
-					
-					let proposables = [];
-					
-					suggestions.forEach((suggestion) => {
-						if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
-					});
-					
-					proposables.forEach((proposal) => {
-						
-						let newOption = document.createElement("option");
-						newOption.value = proposal;
-						self.ids_datalist.appendChild(newOption);
-					});				
-				}
-				
-			}
-			
-			var setAutoAccountsDatalist = function(input, reference){
-				
-				//clear prevoius suggestions
-				self.ids_datalist.innerHTML = "";
-				self.accounts_datalist.innerHTML = "";
-				
-				if (addressBook === null) return; //too soon. Suggestions will be available on next call (probably)
-				
-				if (reference.value === "") return; //no accounts for no user
-				
-				var suggestions = addressBook[reference.value];
-				
-				if (suggestions === undefined) return; //no available suggestions
-				
-				if(!suggestions.contains(input.value)){ //input value is already a suggestion
-					
-					let proposables = [];
-					
-					suggestions.forEach((suggestion) => {
-						suggestion = suggestion.toString();
-						if (suggestion.startsWith(input.value)) proposables.push(suggestion); //only propose suggestion that match the "partial" input
-					});
-					
-					proposables.forEach((proposal) => {
-						
-						let newOption = document.createElement("option");
-						newOption.value = proposal;
-						self.accounts_datalist.appendChild(newOption);
-					});	
-				}
-			}
-			
-			var userIdInput = actual_request_movement_form.querySelector("input[name='inuserid']");
-			var accountIdInput = actual_request_movement_form.querySelector("input[name='inaccountid']");
-			
-			userIdInput.addEventListener("focus", (e) => {
-				setAutoIDsDatalist(e.target);
-			})
-			
-			userIdInput.addEventListener("keyup", (e) => {
-				setAutoIDsDatalist(e.target);
-			})
-			
-			accountIdInput.addEventListener("focus", (e) => {
-				setAutoAccountsDatalist(e.target, userIdInput);
-			})
-			
-			accountIdInput.addEventListener("keyup", (e) => {
-				setAutoAccountsDatalist(e.target, userIdInput);
-			})
 			
 			self.status_div.style.display = "block";
 		}
@@ -735,6 +738,51 @@
 		this.add_contact_result = _add_contact_result;
 		
 		var self = this;
+
+		this.add_contact_button.addEventListener("click", () => {
+			var movement, outAccount, inAccount;
+				
+			movement = transferResult["movement"];
+			outAccount = transferResult["outAccount"];
+			inAccount = transferResult["inAccount"];
+						
+			makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, null, (request) => {
+				
+				switch(request.status){
+		
+					case 200: //ok
+						self.add_contact_div.style.display = "none";
+						self.add_contact_result.textContent = "Successfully added " + inAccount.ownerID + " to you contacts";
+						self.add_contact_result.style.display = "block";
+						//todo
+						break;
+					case 400: //bad request
+					case 401: //unauthorized
+					case 500: //server error
+						self.add_contact_result.textContent = request.responseText;
+						self.add_contact_result.style.display = "block";
+						break;
+					default: //error
+						self.add_contact_result.textContent = "Request reported status " + request.status;
+						self.add_contact_result.style.display = "block";
+
+				}
+				
+			})
+			
+		}, false);
+		
+		this.refuse_contact_button.addEventListener("click", () => {
+			var movement, outAccount, inAccount;
+				
+			movement = transferResult["movement"];
+			outAccount = transferResult["outAccount"];
+			inAccount = transferResult["inAccount"];
+			
+			self.add_contact_div.style.display = "none";
+			self.add_contact_result.textContent =  inAccount.ownerID + " was not added to your contacts";
+			self.add_contact_result.style.display = "block";
+		})
 		
 		this.show = function(){
 			
@@ -781,41 +829,7 @@
 					
 					self.add_contact_button.textContent = "Add " +  inAccount.ownerID;
 					self.refuse_contact_button.textContent = "Don't add " + inAccount.ownerID;
-					
-					self.add_contact_button.addEventListener("click", () => {
-						
-						makeCall("POST", "AddContact?accountid=" + inAccount.ownerID, null, (request) => {
-							
-							switch(request.status){
-					
-								case 200: //ok
-									self.add_contact_div.style.display = "none";
-									self.add_contact_result.textContent = "Successfully added " + inAccount.ownerID + " to you contacts";
-									self.add_contact_result.style.display = "block";
-									//todo
-									break;
-								case 400: //bad request
-								case 401: //unauthorized
-								case 500: //server error
-									self.add_contact_result.textContent = request.responseText;
-									self.add_contact_result.style.display = "block";
-									break;
-								default: //error
-									self.add_contact_result.textContent = "Request reported status " + request.status;
-									self.add_contact_result.style.display = "block";
-			
-							}
-							
-						})
-						
-					}, false);
-					
-					self.refuse_contact_button.addEventListener("click", () => {
-						
-						self.add_contact_div.style.display = "none";
-						self.add_contact_result.textContent =  inAccount.ownerID + " was not added to your contacts";
-						self.add_contact_result.style.display = "block";
-					})
+				
 					
 					self.add_contact_div.style.display = "block";
 				}
