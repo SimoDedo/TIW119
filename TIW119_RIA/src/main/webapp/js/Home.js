@@ -226,7 +226,7 @@
 						status = document.createElement("td");
 						let status_anchor = document.createElement("a");
 						status_anchor.href = "#";
-						status_anchor.textContent = "Show account status";
+						status_anchor.textContent = "See status";
 						
 						status_anchor.addEventListener("click", () => {
 							
