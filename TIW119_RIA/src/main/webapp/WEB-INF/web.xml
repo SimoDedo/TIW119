@@ -29,7 +29,7 @@
       <url-pattern>/CreateAccount</url-pattern>
       <url-pattern>/GetMovementsData</url-pattern>
       <url-pattern>/RequestMovement</url-pattern>
-      <url-pattern>/GetContacts</url-pattern>
+      <url-pattern>/GetContactsData</url-pattern>
       <url-pattern>/AddContact</url-pattern>
   </filter-mapping>
   <filter>
