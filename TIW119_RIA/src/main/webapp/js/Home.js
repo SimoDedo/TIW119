@@ -385,8 +385,6 @@
 			let destAccountID = actual_request_movement_form.querySelector("input[name='inaccountid']");
 			let amount = actual_request_movement_form.querySelector("input[name='amount']");
 			let srcAccountID = actual_request_movement_form.querySelector("input[name='outaccountid']");
-			console.log(Number(amount.value));
-			console.log(Number(displayedAccount.balance));
 
 			if (Number(amount.value) <= 0){
 				self.request_movement_error.textContent = "Error! Amount must be greater than 0";
